@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 14:55:53 CST 2016
+@default-artifactory-http\://172.0.0.30\:8080/artifactory/plugins-releases/.lastUpdated=1481871346046
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871353005
+http\://172.0.0.30\:8080/artifactory/plugins-releases/.error=Could not transfer artifact org.codehaus.plexus\:plexus-utils\:jar\:2.0.5 from/to artifactory (http\://172.0.0.30\:8080/artifactory/plugins-releases)\: Connection refused

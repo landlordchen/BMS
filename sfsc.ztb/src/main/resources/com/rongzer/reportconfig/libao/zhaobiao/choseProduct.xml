@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="productdetail" js="/webresources/script/validate.js" title="评分结果">
+		<report id="report1" type="editablelist2" extends="baseListPage.baseReport" rowselect="checkbox" >
+			<header>
+     			<![CDATA[
+     				<script>
+					//根据勾选项提交
+						function submitPrBySelected(){
+							//获取被选择的行数据
+			  				var prIdList = getListReportSelectedTrDatas("choseProduct","report1",false,true,false);
+			  				if (prIdList != null&&prIdList.length>0){
+               					//将ID变为数组
+               					var prIds = new Array();
+               					var proLimit='';
+               					for(var i=0;i<prIdList.length;i++) {
+									var rowDataObj=prIdList[i];//取到本行各列的数据
+									var prId =rowDataObj["PRODUCT_ID"].oldvalue;
+									var teId =rowDataObj["TENDER_ID"].oldvalue;
+										prIds.push(prId);
+									proLimit=rowDataObj["SEL_LIMIT"].oldvalue;
+								}
+								console.log(proLimit);
+								if(prIds.length>0){
+					  				$.ajax({
+					  				 	type: "POST",
+										url:"audit/changestatusofpr.htm",
+										dataType:"JSON",
+										data:{prIds:JSON.stringify(prIds),teId:teId,limit:proLimit},
+										success:function(data){
+											if("error"===data){
+												wx_error("操作失败！");
+											}else if("more"===data){
+												wx_warn("最多选择"+proLimit+"个礼品！");
+											}else{
+												wx_success("选择成功！");
+											}
+											//刷新报表
+											window.refreshComponentDisplay("choseProduct", "report1", false);
+										}
+									});
+								}else{
+									wx_alert("没有价格审核通过的数据！");
+								}
+               				}else{
+               					wx_alert("至少选择一条数据!");
+               				}
+						}
+					</script>
+     			]]>
+     		</header>
+			<display pagecolselect="false">
+				<col column="PRODUCT_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_ID" label="招标项目ID" displaytype="hidden"/>
+				<col column="SEL_LIMIT" label="商品选择上限"  displaytype="hidden"/>
+				<col column="SUPPLIER_NAME" label="供应商名称" />
+				<col column="PRODUCT_BRAND" label="产品品牌" />
+				<col column="PRODUCT_KIND" label="产品型号（货号）" />
+				<col column="PRODUCT_NAME" label="产品名称" />
+				<col column="PRODUCT_SIZE" label="规格尺寸" />
+				<col column="STOCK_NUM" label="承诺备货量" />
+				<col column="JD_PRICE" label="京东价格" />
+				<col column="YHD_PRICE" label="一号店价格" />
+				<col column="TM_PRICE" label="天猫价格" />
+				<col column="GW_PRICE" label="官网价格" />
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）" />
+				<col column="INVOICE_TYPE" label="开票种类" />
+				<col column="REMARK" label="备注" />
+				<!-- <col column="SETTLE_PRICE_UPDATE" label="结算价修改项" /> -->
+				<!--<col column="STATUS" label="终审结果" valuestyleproperty="DICT"/>-->
+				<!-- <col column="SCORE" label="评估委员会评估值" /> -->
+				<col column="IS_DELETE" label="是否删除" displaytype="hidden"/>
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden"/>
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden"/>
+				<col column="{non-fromdb}" property="edit" label="编辑" width="8%"/>
+			</display>
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								tt.SEL_LIMIT,
+								t1.PRODUCT_ID,
+								t1.SUPPLIER_NAME,
+								t1.TENDER_ID,
+								t1.PRODUCT_BRAND,
+								t1.PRODUCT_KIND,
+								t1.PRODUCT_NAME,
+								t1.PRODUCT_SIZE,
+								t1.STOCK_NUM,
+								t1.PRODUCT_DETAIL,
+								t1.JD_PRICE,
+								t1.YHD_PRICE,
+								t1.TM_PRICE,
+								t1.GW_PRICE,
+								t1.PRODUCT_PRICE_URL,
+								t1.SETTLE_PRICE_CONTAIN_POSTAGE,
+								t1.EXPRESS_RANGE,
+								t1.INVOICE_TYPE,
+								t1.REMARK,
+								t1.SETTLE_PRICE_UPDATE,
+								t1. STATUS,
+								t1.SCORE,
+								t1.REMARK2,
+								t1.IS_DELETE,
+								t1.CREATE_USER,
+								t1.CREATE_TIME,
+								t1.UPDATE_USER,
+								t1.UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO t1
+							LEFT JOIN 
+								T_TENDER_INFO tt on t1.TENDER_ID=tt.TENDER_ID
+							 WHERE t1.IS_DELETE=0 and status ='L00102'
+							  AND t1.PRODUCT_ID NOT IN (
+								SELECT
+									t1.PRODUCT_ID
+								FROM
+									t_product_ref_user t1
+								WHERE
+									t1.CREATE_USER='#user_id#'
+									and {#condition#} 
+							)
+							 
+							 and {#condition#} 
+							 ORDER BY UPDATE_TIME DESC
+						
+						 ]]>
+					</value>
+					<condition name="user_id" label="用户id" keepkeywords="true" source="session{LoginUser.loginUserId}" hidden="true" />
+					<condition name="NODE_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(t1.TENDER_ID = '#data#')]]></value>
+					</condition>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+						<value><![CDATA[(SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_NAME" label="产品名称" >
+						<value><![CDATA[(PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:40px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:80px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+			<buttons>
+				<button name="btn1" position="title" label="选取" extends="${wabacus.button.default}">
+	              	submitPrBySelected()
+	          </button>
+			</buttons>
+			<format>
+				<imports>
+				      <import>com.rongzer.rdp.web.domain.system.LoginUser</import>
+			    </imports>
+				<value>
+			  	<![CDATA[
+				  	String userId = (String)rrequest.getAttribute("LOGINUSER_USERID");
+					if("2c8080fa45cb50840145cb5300310003".equals(userId)){
+						edit = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>"+"  "
+				  	+ "<a href='#'' style='margin-left:10px;"+rrequest.getAttribute("report1_edit")+"' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=update&PRODUCT_ID="+PRODUCT_ID+"',{title:'编辑',initsize:'max'})\">编辑</a>";
+					}else{
+						edit =  "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>";
+					}
+				
+				  ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+	<page id="choseProduct" js="/webresources/script/validate.js" title="评分结果">
+		   <report id="report1" title="所有产品" extends="productdetail.report1" bottom="120" ></report>
+		   <report id="report2" title="已选中" extends="page_loginuser_list.report1"></report>
+	</page>
+</applications>

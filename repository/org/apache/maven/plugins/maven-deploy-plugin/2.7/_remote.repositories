@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Mon Sep 11 16:36:21 CST 2017
+maven-deploy-plugin-2.7.jar>central=
+maven-deploy-plugin-2.7.jar>nexus=
+maven-deploy-plugin-2.7.pom>central=

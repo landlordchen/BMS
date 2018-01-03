@@ -1,0 +1,11 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:02:20 CST 2016
+@default-ext-release-local-http\://172.0.0.30\:8080/artifactory/ext-release-local/.lastUpdated=1481871740112
+http\://172.0.0.30\:8080/artifactory/maven/.error=Could not transfer artifact javassist\:javassist\:pom\:3.12.1.GA from/to maven-cache (http\://172.0.0.30\:8080/artifactory/maven)\: Connection refused
+@default-third-party-http\://172.0.0.30\:8080/artifactory/third-party/.lastUpdated=1481871740110
+@default-maven-cache-http\://172.0.0.30\:8080/artifactory/maven/.lastUpdated=1481871740109
+http\://172.0.0.30\:8080/artifactory/private-internal-repository/.error=Could not transfer artifact javassist\:javassist\:pom\:3.12.1.GA from/to private-internal-repository (http\://172.0.0.30\:8080/artifactory/private-internal-repository)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/ext-release-local/.error=Could not transfer artifact javassist\:javassist\:pom\:3.12.1.GA from/to ext-release-local (http\://172.0.0.30\:8080/artifactory/ext-release-local)\: Connection refused
+@default-private-internal-repository-http\://172.0.0.30\:8080/artifactory/private-internal-repository/.lastUpdated=1481871740114
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871740382
+http\://172.0.0.30\:8080/artifactory/third-party/.error=Could not transfer artifact javassist\:javassist\:pom\:3.12.1.GA from/to third-party (http\://172.0.0.30\:8080/artifactory/third-party)\: Connection refused

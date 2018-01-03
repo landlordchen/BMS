@@ -1,0 +1,15 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:04:43 CST 2016
+@default-central-https\://repo.maven.apache.org/maven2/.lastUpdated=1480149879464
+@default-apache\ release-https\://repository.apache.org/content/repositories/releases/.lastUpdated=1480149879465
+http\://repository.jboss.org/nexus/content/groups/public-jboss/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to repository.jboss.org (http\://repository.jboss.org/nexus/content/groups/public-jboss/)\: The operation was cancelled.
+http\://people.apache.org/~garyh/mvn/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to ghelmling.testing (http\://people.apache.org/~garyh/mvn/)\: The operation was cancelled.
+https\://repository.apache.org/content/repositories/snapshots/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to apache.snapshots.https (https\://repository.apache.org/content/repositories/snapshots)\: The operation was cancelled.
+@default-repository.jboss.org-http\://repository.jboss.org/nexus/content/groups/public-jboss/.lastUpdated=1480149879467
+http\://download.java.net/maven/2/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to java.net (http\://download.java.net/maven/2/)\: The operation was cancelled.
+@default-apache.snapshots.https-https\://repository.apache.org/content/repositories/snapshots/.lastUpdated=1480149879468
+@default-java.net-http\://download.java.net/maven/2/.lastUpdated=1480149879466
+https\://repository.apache.org/content/repositories/releases/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to apache release (https\://repository.apache.org/content/repositories/releases/)\: The operation was cancelled.
+https\://repo.maven.apache.org/maven2/.error=Could not transfer artifact io.netty\:netty\:pom\:3.7.0.Final from/to central (https\://repo.maven.apache.org/maven2)\: The operation was cancelled.
+http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1481871883148
+@default-ghelmling.testing-http\://people.apache.org/~garyh/mvn/.lastUpdated=1480149879467

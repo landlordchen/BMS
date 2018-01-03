@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Tue Dec 20 00:41:30 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact com.rongzer.rdp\:rdp.c.rule\:jar\:sources\:0.7.1.1.6-20161012.013546-187 from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: connect timed out
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1482165690123

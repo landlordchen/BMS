@@ -1,0 +1,6 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Mon Sep 11 16:36:10 CST 2017
+plexus-container-default-1.5.5.pom>nexus=
+plexus-container-default-1.5.5.jar>nexus=
+plexus-container-default-1.5.5.jar>central=
+plexus-container-default-1.5.5.pom>central=

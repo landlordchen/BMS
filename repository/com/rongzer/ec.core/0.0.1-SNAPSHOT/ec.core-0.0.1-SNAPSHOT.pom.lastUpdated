@@ -1,0 +1,10 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:06:00 CST 2016
+http\://172.0.0.30\:8080/artifactory/private-internal-repository/.error=Could not transfer artifact com.rongzer\:ec.core\:pom\:0.0.1-SNAPSHOT from/to private-internal-repository (http\://172.0.0.30\:8080/artifactory/private-internal-repository)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/maven/.error=Could not transfer artifact com.rongzer\:ec.core\:pom\:0.0.1-SNAPSHOT from/to maven-cache (http\://172.0.0.30\:8080/artifactory/maven)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/ext-release-local/.error=Could not transfer artifact com.rongzer\:ec.core\:pom\:0.0.1-SNAPSHOT from/to ext-release-local (http\://172.0.0.30\:8080/artifactory/ext-release-local)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/third-party/.error=Could not transfer artifact com.rongzer\:ec.core\:pom\:0.0.1-SNAPSHOT from/to third-party (http\://172.0.0.30\:8080/artifactory/third-party)\: Connection refused
+@default-maven-cache-http\://172.0.0.30\:8080/artifactory/maven/.lastUpdated=1481871960018
+@default-third-party-http\://172.0.0.30\:8080/artifactory/third-party/.lastUpdated=1481871960020
+@default-private-internal-repository-http\://172.0.0.30\:8080/artifactory/private-internal-repository/.lastUpdated=1481871960024
+@default-ext-release-local-http\://172.0.0.30\:8080/artifactory/ext-release-local/.lastUpdated=1481871960022

@@ -1,0 +1,50 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.rongzer.rdp</groupId>
+		<artifactId>ec</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.rongzer.rdp.ec</groupId>
+	<artifactId>ec.c.extension</artifactId>
+	<version>${ec.version}</version>
+	<packaging>jar</packaging>
+
+	<name>ec.c.extension</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.rongzer.rdp</groupId>
+			<artifactId>rdp.b.cache</artifactId>
+			<version>${rdp.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.rongzer.rdp</groupId>
+			<artifactId>rdp.b.common</artifactId>
+			<version>${rdp.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.rongzer.rdp</groupId>
+			<artifactId>rdp.b.util</artifactId>
+			<version>${rdp.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.rongzer.rdp.ec</groupId>
+			<artifactId>ec.b.common</artifactId>
+			<version>${ec.version}</version>
+		</dependency>
+
+	</dependencies>
+</project>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="tenderSel" js="/webresources/script/validate.js" title="终审选择情况">
+		<report id="report1" type="editablelist2" extends="baseListPage.baseReport" rowselect=""  dataexport="richexcel">
+		   
+			<display pagecolselect="false">
+				<col column="PRODUCT_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_ID" label="招标项目ID" displaytype="hidden"/>
+				<group label="终审人员信息">
+					<col column="ACCOUNT" label="账号" rowgroup="true"></col>
+					<col column="NAME_CN" label="中文名" rowgroup="true"></col>
+					<col column="NAME_EN" label="英文名" rowgroup="true"></col>
+					<col column="PHONE" label="联系电话" rowgroup="true"></col>
+			    </group>
+				<col column="SUPPLIER_NAME" label="供应商名称" />
+				<col column="PRODUCT_BRAND" label="产品品牌" />
+				<col column="PRODUCT_KIND" label="产品型号（货号）" />
+				<col column="PRODUCT_NAME" label="产品名称" />
+				<col column="PRODUCT_SIZE" label="规格尺寸" />
+				<col column="STOCK_NUM" label="承诺备货量" />
+				<col column="JD_PRICE" label="京东价格" />
+				<col column="YHD_PRICE" label="一号店价格" />
+				<col column="TM_PRICE" label="天猫价格" />
+				<col column="GW_PRICE" label="官网价格" />
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）" />
+				<col column="INVOICE_TYPE" label="开票种类" />
+				<col column="REMARK" label="备注" />
+				<!-- <col column="SETTLE_PRICE_UPDATE" label="结算价修改项" /> -->
+				<!--<col column="STATUS" label="终审结果" valuestyleproperty="DICT"/>-->
+				<!-- <col column="SCORE" label="评估委员会评估值" /> -->
+				<col column="IS_DELETE" label="是否删除" displaytype="hidden"/>
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden"/>
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden"/>
+				<col column="{non-fromdb}" property="viewInfo" label="操作" width="80"></col>
+			</display>
+			<sql>
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								u.NAME_CN,
+								u.NAME_EN,
+								u.ACCOUNT,
+								u.PHONE,
+								t1.TENDER_ID,
+								t1.PRODUCT_ID,
+								t2.SUPPLIER_NAME,
+								t2.product_name,
+								t2.PRODUCT_KIND,
+								t2.PRODUCT_BRAND,
+								t2.PRODUCT_SIZE,
+								t2.STOCK_NUM,
+								t2.PRODUCT_DETAIL,
+								t2.JD_PRICE,
+								t2.YHD_PRICE,
+								t2.TM_PRICE,
+								t2.GW_PRICE,
+								t2.PRODUCT_PRICE_URL,
+								t2.SETTLE_PRICE_CONTAIN_POSTAGE,
+								t2.EXPRESS_RANGE,
+								t2.INVOICE_TYPE,
+								t2.REMARK,
+								t2.SETTLE_PRICE_UPDATE,
+								t2. STATUS,
+								t2.SCORE,
+								t2.REMARK2,
+								t2.IS_DELETE,
+								t2.CREATE_USER,
+								t2.CREATE_TIME,
+								t2.UPDATE_USER,
+								t2.UPDATE_TIME
+								
+							FROM
+								T_PRODUCT_REF_USER t1
+							LEFT JOIN R_SYS_USER_INFO U ON U.USER_ID=T1.CREATE_USER
+							LEFT JOIN T_SUPPLIER_PRODUCT_INFO t2 ON t1.PRODUCT_ID = t2.PRODUCT_ID
+							WHERE
+								{#condition#}	
+							order by u.ACCOUNT
+						 ]]>
+					</value>
+					<condition name="user_id" label="用户id" keepkeywords="true" source="session{LoginUser.loginUserId}" hidden="true" />
+					<condition name="NODE_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(t1.TENDER_ID = '#data#')]]></value>
+					</condition>
+					<condition name="FINALTR_NAME" label="终审人员" >
+						<value><![CDATA[(ACCOUNT like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="600" casesensitive="false">
+								<promptcol label="ACCOUNT"  title="登录账号" matchmode="anywhere"></promptcol>
+								<promptcol label="NAME_CN" value="ACCOUNT" title="中文名" matchmode="anywhere"></promptcol>
+								<promptcol label="NAME_EN" value="ACCOUNT" title="英文名" matchmode="anywhere"></promptcol>
+								<promptcol label="PHONE" value="ACCOUNT" title="电话" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT NAME_CN , NAME_EN , ACCOUNT , PHONE FROM R_SYS_USER_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+						<value><![CDATA[(SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_NAME" label="产品名称" >
+						<value><![CDATA[(PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:40px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:80px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<value>
+			  	<![CDATA[
+				  	
+						viewInfo = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>";
+					
+				
+				  ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+</applications>

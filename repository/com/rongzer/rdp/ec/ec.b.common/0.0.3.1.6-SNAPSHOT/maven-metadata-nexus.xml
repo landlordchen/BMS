@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.rongzer.rdp.ec</groupId>
+  <artifactId>ec.b.common</artifactId>
+  <version>0.0.3.1.6-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20161130.013925</timestamp>
+      <buildNumber>472</buildNumber>
+    </snapshot>
+    <lastUpdated>20161130013925</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.0.3.1.6-20161130.013925-472</value>
+        <updated>20161130013925</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.3.1.6-20161130.013925-472</value>
+        <updated>20161130013925</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

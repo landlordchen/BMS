@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- RDP注册-->
+<mapper namespace="com.rongzer.mapper.RdpRegistMapper">
+	
+	<insert id="insertRdpCustomer">
+       	INSERT INTO R_SYS_USER_INFO 
+       		(
+				USER_ID,
+				GROUP_ID,
+				NAME_CN,
+				ACCOUNT,
+				PASSWORD,
+				SEX,
+				IS_DELETE,
+				ADD_TIME,
+				ADD_USER,
+				UPDATE_TIME,
+				UPDATE_USER
+			)VALUES
+			(
+				#{USER_ID},
+				#{GROUP_ID},
+				#{NAME_CN},
+				#{ACCOUNT},
+				#{PASSWORD},
+				#{SEX},
+				#{IS_DELETE},
+				#{ADD_TIME},
+				#{ADD_USER},
+				#{UPDATE_TIME},
+				#{UPDATE_USER}
+			);
+
+    </insert>
+    
+    <insert id="insertRdpCustomerRole">
+       	INSERT INTO R_SYS_USER_ROLE 
+       		(
+				RELATIVE_ID,
+				USER_ID,
+				ROLE_ID
+			)VALUES
+			(
+				#{RELATIVE_ID},
+				#{USER_ID},
+				#{ROLE_ID}
+			);
+
+    </insert>
+
+	<select  id="checkRdpCustomer" parameterType="string" resultType="map">
+		SELECT 
+			1
+		FROM 
+			R_SYS_USER_INFO 
+		WHERE 
+			ACCOUNT=#{account};
+	</select>
+	
+	<select  id="checkRdpSupple" parameterType="string" resultType="map">
+		SELECT 
+			1
+		FROM 
+			R_SYS_USER_INFO 
+		WHERE 
+			NAME_CN=#{nameCn};
+	</select>
+	
+	<select  id="selectGroup"  resultType="map">
+		SELECT
+			GROUP_ID,
+			GROUP_FULL_NAME,
+			GROUP_SHORT_NAME,
+			PARENT_ID
+		FROM
+			R_SYS_GROUP_INFO
+		WHERE
+			PARENT_ID = '1'
+		AND 
+			IS_DELETE='0';
+
+	</select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 活动信息管理 管理 -->
+<mapper namespace="com.rongzer.mapper.AuditMapper">
+	
+	<!-- 更改审核状态 -->
+	<insert id="changeStatusOfPr"  parameterType="string">
+       	INSERT INTO T_PRODUCT_REF_USER
+	         	(
+	         		 REF_ID,
+					 TENDER_ID,
+					 PRODUCT_ID,
+					 CREATE_USER,
+					 CREATE_TIME
+	         	)select
+	         	#{REF_ID},
+	         	#{TENDER_ID},
+	         	#{PRODUCT_ID},
+	         	#{userId},
+	         	a.v FROM
+	         	(SELECT NOW() as v) a
+	         	where not EXISTS (SELECT REF_ID FROM T_PRODUCT_REF_USER
+	          					WHERE TENDER_ID=#{TENDER_ID}
+	          					AND PRODUCT_ID= #{PRODUCT_ID}
+	          					AND CREATE_USER=#{userId}
+	          					)
+    </insert>
+    <delete id="deleteSelected" parameterType="string">
+       		delete from T_PRODUCT_REF_USER where ref_id=#{REF_ID}
+    </delete>
+    <select id="check" parameterType="map" resultType="int">
+    	SELECT COUNT(REF_ID) from T_product_ref_user
+		WHERE CREATE_USER=#{userId} AND TENDER_ID=#{teId}
+    </select>
+</mapper>

@@ -1,0 +1,11 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 14:56:47 CST 2016
+@default-ext-release-local-http\://172.0.0.30\:8080/artifactory/ext-release-local/.lastUpdated=1481871406879
+http\://172.0.0.30\:8080/artifactory/maven/.error=Could not transfer artifact net.sourceforge.jtds\:jtds\:pom\:1.3.1 from/to maven-cache (http\://172.0.0.30\:8080/artifactory/maven)\: Connection refused
+@default-third-party-http\://172.0.0.30\:8080/artifactory/third-party/.lastUpdated=1481871406877
+@default-maven-cache-http\://172.0.0.30\:8080/artifactory/maven/.lastUpdated=1481871406875
+http\://172.0.0.30\:8080/artifactory/private-internal-repository/.error=Could not transfer artifact net.sourceforge.jtds\:jtds\:pom\:1.3.1 from/to private-internal-repository (http\://172.0.0.30\:8080/artifactory/private-internal-repository)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/ext-release-local/.error=Could not transfer artifact net.sourceforge.jtds\:jtds\:pom\:1.3.1 from/to ext-release-local (http\://172.0.0.30\:8080/artifactory/ext-release-local)\: Connection refused
+@default-private-internal-repository-http\://172.0.0.30\:8080/artifactory/private-internal-repository/.lastUpdated=1481871406882
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871407385
+http\://172.0.0.30\:8080/artifactory/third-party/.error=Could not transfer artifact net.sourceforge.jtds\:jtds\:pom\:1.3.1 from/to third-party (http\://172.0.0.30\:8080/artifactory/third-party)\: Connection refused

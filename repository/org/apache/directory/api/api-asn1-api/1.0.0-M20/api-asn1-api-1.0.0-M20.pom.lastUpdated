@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Nov 26 16:42:59 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact org.apache.directory.api\:api-asn1-api\:pom\:1.0.0-M20 from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: connect timed out
+https\://repo.maven.apache.org/maven2/.lastUpdated=1480149779906
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1480149778905

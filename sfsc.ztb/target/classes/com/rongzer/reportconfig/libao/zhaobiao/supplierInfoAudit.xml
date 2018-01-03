@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="supplierInfoAudit1" js="/webresources/script/validate.js" title="材料审核">
+		<report id="report1" type="editablelist2" extends="baseListPage.baseReport" rowselect="" dataexport="richexcel">
+			<display pagecolselect="false">
+				<col column="PRODUCT_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_ID" label="招标项目ID" displaytype="hidden"/>
+				<col column="SUPPLIER_NAME" label="供应商名称" />
+				<col column="PRODUCT_BRAND" label="产品品牌" />
+				<col column="PRODUCT_KIND" label="产品型号（货号）" />
+				<col column="PRODUCT_NAME" label="产品名称" />
+				<col column="PRODUCT_SIZE" label="规格尺寸" />
+				<col column="STOCK_NUM" label="承诺备货量" />
+				<col column="JD_PRICE" label="京东价格" />
+				<col column="YHD_PRICE" label="一号店价格" />
+				<col column="TM_PRICE" label="天猫价格" />
+				<col column="GW_PRICE" label="官网价格" />
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）" />
+				<col column="INVOICE_TYPE" label="开票种类" />
+				<col column="REMARK" label="备注" />
+				<!-- <col column="SETTLE_PRICE_UPDATE" label="结算价修改项" /> -->
+				<col column="STATUS" label="初审结果" valuestyleproperty="DICT"/>
+				<!-- <col column="SCORE" label="评估委员会评估值" /> -->
+				<col column="REMARK2" label="初审信息" />
+				<col column="IS_DELETE" label="是否删除" displaytype="hidden"/>
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden"/>
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden"/>
+				<col column="{non-fromdb}" property="edit" label="编辑"  width="10%"/>
+			</display>
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								PRODUCT_ID,
+								SUPPLIER_NAME,
+								TENDER_ID,
+								PRODUCT_BRAND,
+								PRODUCT_KIND,
+								PRODUCT_NAME,
+								PRODUCT_SIZE,
+								STOCK_NUM,
+								PRODUCT_DETAIL,
+								JD_PRICE,
+								YHD_PRICE,
+								TM_PRICE,
+								GW_PRICE,
+								PRODUCT_PRICE_URL,
+								SETTLE_PRICE_CONTAIN_POSTAGE,
+								EXPRESS_RANGE,
+								INVOICE_TYPE,
+								REMARK,
+								SETTLE_PRICE_UPDATE,
+								STATUS,
+								SCORE,
+								REMARK2,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO
+							 WHERE IS_DELETE=0 AND  {#condition#} 
+							 ORDER BY UPDATE_TIME DESC
+						 ]]>
+					</value>
+					<condition name="NODE_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(TENDER_ID = '#data#')]]></value>
+					</condition>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+						<value><![CDATA[(SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_NAME" label="产品名称" >
+						<value><![CDATA[(PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox >
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox >
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="STATUS" label="审核结果" defaultvalue="L00101">
+						<value><![CDATA[(STATUS = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option
+								dataset="@{SELECT DISTINCT ITEM_CODE,ITEM_NAME FROM R_BASE_DICT_ITEM  WHERE   ITEM_CODE='L00101' OR ITEM_CODE='L00105' OR ITEM_CODE='L00102'}"
+								value="ITEM_CODE" label="ITEM_NAME" />
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<value>
+				<![CDATA[
+			  		edit = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>"+"  "
+				 	+ "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=auditOpinion1&PRODUCT_ID="+PRODUCT_ID+"',{title:'审核',initsize:'max'})\">审核</a>";
+
+				  ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+	<page id="auditOpinion1" js="/webresources/script/validate.js,/webresources/tips/js/tipso.js" title="材料审核">
+		<report id="report1" extends="baseListPage.baseReport" title="审核" type="form" pagesize="-1" >
+			<display>
+				<col displaytype="hidden" column="PRODUCT_ID" label="id" colspan="3"/>
+				<col column="STATUS" label="初审结果" colspan="2">
+					<inputbox type="radiobox" defaultvalue="L00102">
+						<option value="L00105" label="初审不通过" /> 
+			            <option value="L00102" label="初审通过"/>
+			            <option value="L00101" label="未审核"/>
+					</inputbox>
+				</col>
+				<col column="REMARK2" label="初审意见">
+					 <inputbox type="textareabox" jsvalidate="textareaLength255(${invalid.isStrLen255});" jsvalidatetype="both" >
+	            	</inputbox>
+				</col>
+			</display>
+			
+			<sql aftersave="refreshParentForm">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT PRODUCT_ID,
+								   STATUS,
+								   REMARK2
+							from t_supplier_product_info
+							WHERE IS_DELETE = '0' AND {#condition#}
+						]]>
+					</value>
+					<condition name="PRODUCT_ID" hidden="true">
+						<value><![CDATA[(PRODUCT_ID =  '#data#')]]></value>
+					</condition>
+				</select>
+				<update>
+			         <value>
+			         	UPDATE 
+			         		T_SUPPLIER_PRODUCT_INFO 
+			         	SET
+				         	STATUS=@{STATUS},
+				         	REMARK2=@{REMARK2}
+			         	WHERE 
+			         		PRODUCT_ID=@{PRODUCT_ID}
+			         </value>
+	       		</update>
+			</sql>
+			<buttons>
+				<button name="button1" position="" extends="${save.button.default}"></button>
+				<button name="button2" position="title" extends="${wabacus.button.default}" label="保存">
+			 		doAddDataForSaving('auditOpinion1_guid_report1','true'); 			          
+	          		saveEditableReportData({pageid:'auditOpinion1',savingReportIds:[{reportid:'report1',updatetype:'save'},{reportid:'report2',updatetype:'save'}]});
+	          	</button>
+			</buttons>
+		</report>
+		
+		<report id="report2" extends="supplierInfoEdit.report1" title="商品" type="form" pagesize="-1" >
+			<sql aftersave="refreshParentForm">
+				<select>
+					<value>
+					    <![CDATA[
+					    	SELECT
+								PRODUCT_ID,
+								SUPPLIER_NAME,
+								TENDER_ID,
+								PRODUCT_BRAND,
+								PRODUCT_KIND,
+								PRODUCT_NAME,
+								PRODUCT_SIZE,
+								STOCK_NUM,
+								PRODUCT_DETAIL,
+								JD_PRICE,
+								YHD_PRICE,
+								TM_PRICE,
+								GW_PRICE,
+								PRODUCT_PRICE_URL,
+								SETTLE_PRICE_CONTAIN_POSTAGE,
+								EXPRESS_RANGE,
+								INVOICE_TYPE,
+								REMARK,
+								SETTLE_PRICE_UPDATE,
+								STATUS,
+								SCORE,
+								REMARK2,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO
+							 WHERE IS_DELETE=0 and {#condition#} 
+					    ]]>
+					</value>
+					<condition name="PRODUCT_ID" label="产品ID" hidden="true">
+						<value><![CDATA[PRODUCT_ID = '#data#']]></value>
+					</condition>
+					<condition name="TENDER_ID" label="招标ID" hidden="true">
+						<value><![CDATA[TENDER_ID = '#data#']]></value>
+					</condition>
+				</select>
+				<update>
+				 	 <params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+			            UPDATE 
+			            	T_SUPPLIER_PRODUCT_INFO 
+		            	SET
+							SUPPLIER_NAME=@{SUPPLIER_NAME},               
+							TENDER_ID=@{TENDER_ID},                   
+							PRODUCT_BRAND=@{PRODUCT_BRAND},               
+							PRODUCT_KIND=@{PRODUCT_KIND},                
+							PRODUCT_NAME=@{PRODUCT_NAME},                
+							PRODUCT_SIZE=@{PRODUCT_SIZE},                
+							STOCK_NUM=@{STOCK_NUM},                   
+							PRODUCT_DETAIL=@{PRODUCT_DETAIL},              
+							JD_PRICE=@{JD_PRICE},                    
+							YHD_PRICE=@{YHD_PRICE},                   
+							TM_PRICE=@{TM_PRICE},                    
+							GW_PRICE=@{GW_PRICE},                    
+							PRODUCT_PRICE_URL=@{PRODUCT_PRICE_URL},           
+							SETTLE_PRICE_CONTAIN_POSTAGE=@{SETTLE_PRICE_CONTAIN_POSTAGE},
+							EXPRESS_RANGE=@{EXPRESS_RANGE},               
+							INVOICE_TYPE=@{INVOICE_TYPE},                
+							REMARK=@{REMARK},                      
+							UPDATE_USER=#{userId},                 
+							UPDATE_TIME=#{NOWTIME}  
+						WHERE 
+							PRODUCT_ID=@{PRODUCT_ID};
+		            </value>
+	       		</update>
+			</sql>
+			<buttons>
+				<button name="button1" position="" extends="${save.button.default}"></button>
+				<button name="button2" position="" extends="${add.button.default}"></button>
+			</buttons>
+		</report>
+	</page>
+	<page id="supplierInfoAudit2" js="/webresources/script/validate.js" title="价格审核">
+		<report id="report1" title="价格审核" extends="supplierInfoAudit1.report1" >
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								PRODUCT_ID,
+								SUPPLIER_NAME,
+								TENDER_ID,
+								PRODUCT_BRAND,
+								PRODUCT_KIND,
+								PRODUCT_NAME,
+								PRODUCT_SIZE,
+								STOCK_NUM,
+								PRODUCT_DETAIL,
+								JD_PRICE,
+								YHD_PRICE,
+								TM_PRICE,
+								GW_PRICE,
+								PRODUCT_PRICE_URL,
+								SETTLE_PRICE_CONTAIN_POSTAGE,
+								EXPRESS_RANGE,
+								INVOICE_TYPE,
+								REMARK,
+								SETTLE_PRICE_UPDATE,
+								STATUS,
+								SCORE,
+								REMARK2,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO
+							 WHERE IS_DELETE=0 AND  {#condition#} 
+							 ORDER BY UPDATE_TIME DESC
+						 ]]>
+					</value>
+					<condition name="NODE_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(TENDER_ID = '#data#')]]></value>
+					</condition>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+						<value><![CDATA[(SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_NAME" label="产品名称" >
+						<value><![CDATA[(PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox >
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox >
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="STATUS" label="初审结果" defaultvalue="L00102">
+						<value><![CDATA[(STATUS = '#data#')]]></value>
+						<inputbox type="selectbox">
+							<option
+								dataset="@{SELECT DISTINCT ITEM_CODE,ITEM_NAME FROM R_BASE_DICT_ITEM  WHERE   ITEM_CODE='L00102' }"
+								value="ITEM_CODE" label="ITEM_NAME" />
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+			<format>
+				<value>
+				<![CDATA[
+			  		edit = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>"+"  "
+				 	+ "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=auditOpinion2&PRODUCT_ID="+PRODUCT_ID+"',{title:'审核',width:750,height:500})\">审核</a>";
+				  ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+	<page id="auditOpinion2" js="/webresources/script/validate.js,/webresources/tips/js/tipso.js" title="价格审核">
+		<report id="report1" extends="baseListPage.baseReport" title="审核" type="form" pagesize="-1" >
+			<display>
+				<col displaytype="hidden" column="PRODUCT_ID" label="id" colspan="3"/>
+				<col column="STATUS" label="供应商状态" colspan="2">
+					<inputbox type="radiobox" >
+						<option value="L00106" label="审核不通过"/> 
+			            <option value="L00103" label="产品审核通过"/>
+					</inputbox>
+				</col>
+				<col column="REMARK2" label="审核意见">
+					 <inputbox type="textareabox" jsvalidate="textareaLength255(${invalid.isStrLen255});" jsvalidatetype="both" >
+	            	</inputbox>
+				</col>
+			</display>
+			<sql aftersave="refreshParentForm">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT PRODUCT_ID,
+								   STATUS,
+								   REMARK2
+							from t_supplier_product_info
+							WHERE IS_DELETE = '0' AND {#condition#}
+						]]>
+					</value>
+					<condition name="PRODUCT_ID" hidden="true">
+						<value><![CDATA[(PRODUCT_ID =  '#data#')]]></value>
+					</condition>
+				</select>
+				<update>
+			         <value>
+			         	UPDATE T_SUPPLIER_PRODUCT_INFO SET
+				         	STATUS=@{STATUS},
+				         	REMARK2=@{REMARK2}
+			         	WHERE PRODUCT_ID=@{PRODUCT_ID}
+			         </value>
+	       		</update>
+			</sql>
+			<buttons>
+				<button name="button1" position="" extends="${save.button.default}"></button>
+				<button name="button2" position="title" extends="${wabacus.button.default}" label="保存">
+			 		doAddDataForSaving('auditOpinion2_guid_report1','true'); 			          
+	          		saveEditableReportData({pageid:'auditOpinion2',savingReportIds:[{reportid:'report1',updatetype:'save'},{reportid:'report2',updatetype:'save'}]});
+	          	</button>
+			</buttons>
+		</report>
+		<report id="report2" extends="supplierInfoEdit.report1" title="商品" type="form" pagesize="-1" >
+			<sql aftersave="refreshParentForm">
+				<select>
+					<value>
+					    <![CDATA[
+					    	SELECT
+								PRODUCT_ID,
+								SUPPLIER_NAME,
+								TENDER_ID,
+								PRODUCT_BRAND,
+								PRODUCT_KIND,
+								PRODUCT_NAME,
+								PRODUCT_SIZE,
+								STOCK_NUM,
+								PRODUCT_DETAIL,
+								JD_PRICE,
+								YHD_PRICE,
+								TM_PRICE,
+								GW_PRICE,
+								PRODUCT_PRICE_URL,
+								SETTLE_PRICE_CONTAIN_POSTAGE,
+								EXPRESS_RANGE,
+								INVOICE_TYPE,
+								REMARK,
+								SETTLE_PRICE_UPDATE,
+								STATUS,
+								SCORE,
+								REMARK2,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO
+							 WHERE IS_DELETE=0 and {#condition#} 
+					    ]]>
+					</value>
+					<condition name="PRODUCT_ID" label="产品ID" hidden="true">
+						<value><![CDATA[PRODUCT_ID = '#data#']]></value>
+					</condition>
+					<condition name="TENDER_ID" label="招标ID" hidden="true">
+						<value><![CDATA[TENDER_ID = '#data#']]></value>
+					</condition>
+				</select>
+				<update>
+				 	 <params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+			            UPDATE 
+			            	T_SUPPLIER_PRODUCT_INFO 
+		            	SET
+							SUPPLIER_NAME=@{SUPPLIER_NAME},               
+							TENDER_ID=@{TENDER_ID},                   
+							PRODUCT_BRAND=@{PRODUCT_BRAND},               
+							PRODUCT_KIND=@{PRODUCT_KIND},                
+							PRODUCT_NAME=@{PRODUCT_NAME},                
+							PRODUCT_SIZE=@{PRODUCT_SIZE},                
+							STOCK_NUM=@{STOCK_NUM},                   
+							PRODUCT_DETAIL=@{PRODUCT_DETAIL},              
+							JD_PRICE=@{JD_PRICE},                    
+							YHD_PRICE=@{YHD_PRICE},                   
+							TM_PRICE=@{TM_PRICE},                    
+							GW_PRICE=@{GW_PRICE},                    
+							PRODUCT_PRICE_URL=@{PRODUCT_PRICE_URL},           
+							SETTLE_PRICE_CONTAIN_POSTAGE=@{SETTLE_PRICE_CONTAIN_POSTAGE},
+							EXPRESS_RANGE=@{EXPRESS_RANGE},               
+							INVOICE_TYPE=@{INVOICE_TYPE},                
+							REMARK=@{REMARK},                      
+							UPDATE_USER=#{userId},                 
+							UPDATE_TIME=#{NOWTIME}  
+						WHERE 
+							PRODUCT_ID=@{PRODUCT_ID};
+		            </value>
+	       		</update>
+			</sql>
+			<buttons>
+				<button name="button1" position="" extends="${save.button.default}"></button>
+				<button name="button2" position="" extends="${add.button.default}"></button>
+			</buttons>
+		</report>
+	</page>
+</applications>

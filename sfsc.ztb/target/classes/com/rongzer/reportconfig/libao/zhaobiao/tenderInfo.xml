@@ -1,0 +1,822 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="tenderInfo" js="/webresources/script/validate.js" title="招标项目">
+		<report id="report1" type="editablelist2" extends="baseListPage.baseReport" rowselect="checkbox" dataexport="richexcel">
+			<display pagecolselect="false">
+				<col column="TENDER_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_NAME" label="项目名称" width="12%" />
+				<col column="SUPPLIER_DATE_START" label="供应商开始时间"  width="12%"/>
+				<col column="SUPPLIER_DATE_END" label="供应商结束时间"  width="12%"/>
+				<col column="OPERATE_DATE_START" label="运营审核开始时间" width="12%"/>
+				<col column="OPERATE_DATE_END" label="运营审核结束时间" width="12%"/>
+				<col column="FINAL_DATE_START" label="终审开始时间" width="12%"/>
+				<col column="FINAL_DATE_END" label="终审结束时间" width="12%"/>
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden"/>
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden"/>
+				<col column="{non-fromdb}" property="editoper" label="编辑"  width="8%"/>
+			</display>
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								TENDER_ID,
+								TENDER_NAME,
+								SUPPLIER_DATE_START,
+								SUPPLIER_DATE_END,
+								OPERATE_DATE_START,
+								OPERATE_DATE_END,
+								FINAL_DATE_START,
+								FINAL_DATE_END,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_TENDER_INFO
+							 WHERE IS_DELETE=0 and parent_id is null and {#condition#} 
+							 ORDER BY CREATE_TIME DESC
+						 ]]>
+					</value>
+					<condition name="TENDER_NAME" label="招标项目" >
+					     <value><![CDATA[(TENDER_NAME like '%#data#%')]]></value>
+						<inputbox>
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="TENDER_NAME"  matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT TENDER_NAME FROM T_TENDER_INFO WHERE IS_DELETE=0 AND parent_id is NULL AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="SUPPLIER_DATE_START" label="供应商开始日期" >
+					     <value><![CDATA[(SUPPLIER_DATE_START >= '#data#')]]></value>
+					     <inputbox type="datepicker" ></inputbox>
+					</condition>
+					<condition name="SUPPLIER_DATE_END" label="供应商结束日期" >
+					     <value><![CDATA[(SUPPLIER_DATE_END <= '#data#')]]></value>
+					     <inputbox type="datepicker" ></inputbox>
+					</condition>
+					<condition name="OPERATE_DATE_START" label="运营审核开始日期" >
+					     <value><![CDATA[(SUPPLIER_DATE_START >= '#data#')]]></value>
+					     <inputbox type="datepicker" ></inputbox>
+					</condition>
+					<condition name="OPERATE_DATE_END" label="运营审核结束日期" >
+					     <value><![CDATA[(SUPPLIER_DATE_END <= '#data#')]]></value>
+					     <inputbox type="datepicker" ></inputbox>
+					</condition>
+			    </select>
+			    <delete>
+			        UPDATE T_TENDER_INFO SET IS_DELETE='1' WHERE TENDER_ID=@{TENDER_ID};
+			    </delete>
+			<!-- <insert pageurl="report{tenderInfoEdit.report1}" urlparams="GROUP_ID=rrequest{GROUP_ID};" popupparams="{title:'新增活动',width:750,height:500}"></insert> -->
+			</sql>
+			
+			<format>
+				<imports>
+				      <import>com.rongzer.rdp.web.domain.system.LoginUser</import>
+			    </imports>
+				<value>
+			  	<![CDATA[
+				  	TENDER_NAME="<a href=\"jsp/mainnwp.jsp?funcid=M4000&tenderid="+TENDER_ID+"\">"+TENDER_NAME+"</a>";
+				  	String userId = (String)rrequest.getAttribute("LOGINUSER_USERID");
+					if("2c8080fa45cb50840145cb5300310003".equals(userId)){
+						editoper =  "<a href='javascript:void(0)'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=tenderInfoEdit&report1_ACCESSMODE=update&TENDER_ID="+TENDER_ID+"',{title:'编辑',width:750,height:500})\">编辑</a>";
+					}
+				
+				  ]]>
+				</value>
+			</format>
+			
+			<buttons>
+				<button name="btn0" position="title" label="新增" styleproperty="class='cls-button'">
+				    <![CDATA[
+				     wx_winpage('ShowReport.wx?DISPLAY_TYPE=1&PAGEID=tenderInfoEdit&report1_ACCESSMODE=add&type=new&report2_ACCESSMODE=add&type=new',{title:'新增活动',width:750,height:500});
+				    ]]>
+				</button>
+			</buttons>
+		</report>	
+	</page>
+	<page id="tenderInfoEdit" js="/webresources/script/validate.js" title="新增活动">
+		<report id="report1" extends="baseListPage.baseReport" type="form" pagesize="-1" checkdirtydata="false" onload="hiddenButtonfirst">
+			 <header>
+	          <![CDATA[
+	            <script>
+	            	function hiddenButtonfirst(){
+	            		$("#btn_tenderInfoEdit_guid_report1_add_id").hide();
+	            		$("#btn_tenderInfoEdit_guid_report1_cancel_id").hide();
+	            		var mode=getUrlParam("report1_ACCESSMODE");
+	            		if(mode=="readonly"){
+	            			$("#btn_tenderInfoEdit_guid_report1_savedata_id").hide();
+	            		}
+	            	}
+	            	function saveDate(){
+	            		doAddDataForSaving('tenderInfoEdit_guid_report1','true');
+	            		saveEditableReportData({pageid:'tenderInfoEdit',savingReportIds:[{reportid:'report1',updatetype:'save'},{reportid:'report2',updatetype:'add'}]});
+	            	}
+	            	function getUrlParam(name){
+								var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+								var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+								if (r!=null) return unescape(r[2]); return null; //返回参数值
+							}
+						
+						
+							
+					function isdate_sup(strValue,boxObj,paramsObj){
+						if(null == paramsObj.datasObj.SUPPLIER_DATE_START || null == paramsObj.datasObj.SUPPLIER_DATE_END|| null == paramsObj.datasObj.OPERATE_DATE_START|| null == paramsObj.datasObj.OPERATE_DATE_END|| null == paramsObj.datasObj.FINAL_DATE_START|| null == paramsObj.datasObj.FINAL_DATE_END) {
+          						return true;
+        				}else if(paramsObj.datasObj.SUPPLIER_DATE_START>paramsObj.datasObj.SUPPLIER_DATE_END){
+        						wx_alert("供应商结束时间应大于开始时间");
+          						return false;
+          				}else if(paramsObj.datasObj.SUPPLIER_DATE_START>paramsObj.datasObj.OPERATE_DATE_START){
+          						wx_alert("运营审核开始时间应大于供应商开始时间");
+          						return false;
+          				}else if(paramsObj.datasObj.OPERATE_DATE_START>paramsObj.datasObj.OPERATE_DATE_END){
+          						wx_alert("运营审核结束时间应大于开始时间");
+          						return false;
+          				}else if(paramsObj.datasObj.SUPPLIER_DATE_END>paramsObj.datasObj.OPERATE_DATE_END){
+          						wx_alert("运营审核结束时间应大于供应商结束时间");
+          						return false;
+          				}else if(paramsObj.datasObj.OPERATE_DATE_START>paramsObj.datasObj.FINAL_DATE_START){
+          						wx_alert("终审开始时间应大于运营审核开始时间");
+          						return false;
+          				}else if(paramsObj.datasObj.FINAL_DATE_START>paramsObj.datasObj.FINAL_DATE_END){
+          						wx_alert("终审结束时间应大于开始时间");
+          						return false;
+          				}
+          				else if(paramsObj.datasObj.OPERATE_DATE_END>paramsObj.datasObj.FINAL_DATE_END){
+          						wx_alert("终审结束时间应大于运营审核结束时间");
+          						return false;
+          				}
+          				return true;
+         			}
+						
+	            </script>
+	          ]]>
+          </header>
+			<display pagecolselect="false">
+				<col displaytype="hidden" column="TENDER_ID" label="活动id" colspan="2" />
+				<col column="TENDER_NAME" label="项目名称"  colspan="3">
+					<inputbox type="textbox" jsvalidate="isNotEmpty(${invalid.isnotempty});textareaLength16(#label#最大长度为16个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="SUPPLIER_DATE_START" label="供应商开始时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+				<col column="SUPPLIER_DATE_END" label="供应商结束时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+				<col column="OPERATE_DATE_START" label="运营审核开始时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+				<col column="OPERATE_DATE_END" label="运营审核结束时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+				<col column="PRODUCT_DATE_START" displaytype="hidden"  label="产品审核开始时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty})" jsvalidatetype="both"></inputbox>	
+				</col>
+				<col column="PRODUCT_DATE_END" displaytype="hidden"  label="产品审核结束时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty})" jsvalidatetype="both"></inputbox>	
+				</col>
+				<col column="FINAL_DATE_START" label="终审开始时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+				<col column="FINAL_DATE_END" label="终审结束时间" >
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(${invalid.isnotempty});isdate_sup()" jsvalidatetype="onsubmit"></inputbox>	
+				</col>
+			</display>
+			<sql aftersave="refreshParentForm">
+				 <select>
+					<value>
+					   <![CDATA[
+							SELECT
+								TENDER_ID,
+								TENDER_NAME,
+								SUPPLIER_DATE_START,
+								SUPPLIER_DATE_END,
+								OPERATE_DATE_START,
+								OPERATE_DATE_END,
+								PRODUCT_DATE_START,
+								PRODUCT_DATE_END,
+								FINAL_DATE_START,
+								FINAL_DATE_END,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_TENDER_INFO
+							 WHERE IS_DELETE=0 and {#condition#} 
+							 ORDER BY CREATE_TIME DESC
+						  ]]>
+					</value>
+					<condition name="TENDER_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(TENDER_ID = '#data#')]]></value>
+					</condition>
+				 </select> 
+				 <insert>
+			   		<params>
+						<param name="NEWTENDER_ID" value="uuid{TENDER_ID}"></param>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+			            INSERT INTO T_TENDER_INFO (
+		            		TENDER_ID,
+							TENDER_NAME,
+							SUPPLIER_DATE_START,
+							SUPPLIER_DATE_END,
+							OPERATE_DATE_START,
+							OPERATE_DATE_END,
+							PRODUCT_DATE_START,
+							PRODUCT_DATE_END,
+							FINAL_DATE_START,
+							FINAL_DATE_END,
+							IS_DELETE,
+							CREATE_USER,
+							CREATE_TIME,
+							UPDATE_USER,
+							UPDATE_TIME
+			            )VALUES 
+			            (
+			            	#{NEWTENDER_ID},
+							@{TENDER_NAME},
+							@{SUPPLIER_DATE_START},
+							@{SUPPLIER_DATE_END},
+							@{OPERATE_DATE_START},
+							@{OPERATE_DATE_END},
+							@{PRODUCT_DATE_START},
+							@{PRODUCT_DATE_END},
+							@{FINAL_DATE_START},
+							@{FINAL_DATE_END},
+							'0',
+							#{userId},
+							#{NOWTIME},
+							#{userId},
+							#{NOWTIME}
+			            )
+		            </value>
+		        </insert>
+		        <update>
+		            <params>
+							<param name="userId" value="session{LoginUser.loginUserId}"></param>
+							<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+			            UPDATE T_TENDER_INFO SET
+			           		TENDER_NAME=@{TENDER_NAME},
+							SUPPLIER_DATE_START=@{SUPPLIER_DATE_START},
+							SUPPLIER_DATE_END=@{SUPPLIER_DATE_END},
+							OPERATE_DATE_START=@{OPERATE_DATE_START},
+							OPERATE_DATE_END=@{OPERATE_DATE_END},
+							PRODUCT_DATE_START=@{PRODUCT_DATE_START},
+							PRODUCT_DATE_END=@{PRODUCT_DATE_END},
+							FINAL_DATE_START=@{FINAL_DATE_START},
+							FINAL_DATE_END=@{FINAL_DATE_END},
+							UPDATE_USER=#{userId},
+							UPDATE_TIME=#{NOWTIME}
+						WHERE TENDER_ID=@{TENDER_ID};
+		            </value>
+		        </update>
+			</sql>
+			<buttons>
+				<button name="bt1" position="" extends="${save.button.default}" />
+				<button name="savedata" position="title" label="保存" extends="${wabacus.button.default}">
+	              	saveDate()
+	          </button>
+			</buttons>
+		</report>
+		<report id="report2" type="editablelist2" extends="baseListPage.baseReport" depends="report1" dependsparams="NEWTENDER_ID=@{TENDER_ID}"  pagesize="-1"  >
+			<display>
+				<col displaytype="hidden" column="TENDER_ID" label="项目id"/>
+				<col column="TENDER_NAME" label="子活动名称" align="center" width="50%">
+					<inputbox  jsvalidate="isNotEmpty(${invalid.isnotempty});" jsvalidatetype="both"/>
+				</col>
+				<col column="SEL_LIMIT" label="商品选择上限"  width="50%">
+					<inputbox type="textbox" jsvalidate="isNotEmpty(${invalid.isnotempty});isNumeric(#label#请填写数字)" jsvalidatetype="both" />
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						SELECT 
+							TENDER_ID,
+							TENDER_NAME,
+							SEL_LIMIT
+						FROM T_TENDER_INFO
+						WHERE IS_DELETE=0 and {#condition#} 
+					
+					</value>
+					<condition name="TENDER_ID"  label="tenderId" hidden="true">
+						<value><![CDATA[ PARENT_ID = '#data#' ]]></value>
+					</condition>
+				</select>
+				<insert>
+			   		<params>
+						<param name="NEWTENDER_ID" value="uuid{TENDER_ID}"></param>
+						<param name="nid" value="uuid{}"></param>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+			            INSERT INTO T_TENDER_INFO (
+		            		TENDER_ID,
+							TENDER_NAME,
+							SEL_LIMIT,
+							IS_DELETE,
+							PARENT_ID
+			            )VALUES 
+			            (
+			            	#{nid},
+							@{TENDER_NAME},
+							@{SEL_LIMIT},
+							'0',
+							#{NEWTENDER_ID}
+			            )
+		            </value>
+		        </insert>
+		        <update>
+			   		<params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						 UPDATE T_TENDER_INFO SET
+			           		TENDER_NAME=@{TENDER_NAME},
+			           		SEL_LIMIT=@{SEL_LIMIT},
+			           		UPDATE_USER=#{userId},
+							UPDATE_TIME=#{NOWTIME}
+						WHERE TENDER_ID=@{TENDER_ID};
+			           
+		            </value>
+		        </update>
+		        <delete>
+		       		 <params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						delete from T_TENDER_INFO where TENDER_ID=@{TENDER_ID};
+					</value>
+		        </delete>
+			</sql>
+			<buttons>
+				<button name="bt1" position="" extends="${save.button.default}" />
+			</buttons>
+			<format>
+                <value>
+                    <![CDATA[
+						if("1".equals(rrequest.getAttribute("hideRp2"))){
+							rrequest.authorize("report2",null,null,"display","false");
+						}
+                     ]]>
+                </value>       
+            </format>
+		</report>
+	</page>
+	<page id="page_customer_employee_list" js="/webresources/script/validate.js" title="供应商产品信息列表">
+		<report id="report1"  extends="baseListPage.baseReport" rowselect="checkbox" dataexport="richexcel">
+			<header>
+     			<![CDATA[
+     				<script>
+					//根据勾选项提交
+						function submitPrBySelected(){
+							//获取被选择的行数据
+			  				var prIdList = getListReportSelectedTrDatas("page_customer_employee_list","report1",false,true,false);
+			  				if (prIdList != null&&prIdList.length>0){
+               					//将ID变为数组
+               					var prIds = new Array();
+               					for(var i=0;i<prIdList.length;i++) {
+									var rowDataObj=prIdList[i];//取到本行各列的数据
+									var prId =rowDataObj["PRODUCT_ID"].oldvalue;
+									var teId =rowDataObj["TENDER_ID"].oldvalue;
+								}
+								if(prIds.length>0){
+					  				$.ajax({
+					  				 	type: "POST",
+										url:"audit/changestatusofpr.htm",
+										dataType:"JSON",
+										data:{prIds:JSON.stringify(prIds),teId:teId},
+										success:function(data){
+											if("error"===data){
+												wx_error("提交申请失败！");
+											}else{
+												wx_success("提交申请成功！");
+											}
+											//刷新报表
+											window.refreshComponentDisplay("page_customer_employee_list", "report1", false);
+										}
+									});
+								}else{
+									wx_alert("没有价格审核通过的数据！");
+								}
+               				}else{
+               					wx_alert("至少选择一条数据!");
+               				}
+						}
+					
+					</script>
+     			]]>
+     		</header>
+			<display pagecolselect="false">
+				<col column="PRODUCT_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_ID" label="招标项目ID" displaytype="hidden"/>
+				<col column="SUPPLIER_NAME" label="供应商名称" />
+				<col column="PRODUCT_BRAND" label="产品品牌" />
+				<col column="PRODUCT_KIND" label="产品型号（货号）" />
+				<col column="PRODUCT_NAME" label="产品名称" />
+				<col column="PRODUCT_SIZE" label="规格尺寸" />
+				<col column="STOCK_NUM" label="承诺备货量" />
+				<col column="JD_PRICE" label="京东价格" />
+				<col column="YHD_PRICE" label="一号店价格" />
+				<col column="TM_PRICE" label="天猫价格" />
+				<col column="GW_PRICE" label="官网价格" />
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）" />
+				<col column="INVOICE_TYPE" label="开票种类" />
+				<col column="REMARK" label="备注" />
+				<!-- <col column="SETTLE_PRICE_UPDATE" label="结算价修改项" /> -->
+				<col column="STATUS" label="初审结果" valuestyleproperty="DICT"/> 
+				<col column="STATUS_CODE" label="初审结果" displaytype="hidden"/> 
+				
+				<!-- <col column="SCORE" label="评估委员会评估值" /> -->
+				<col column="REMARK2" label="初审信息" />
+				<col column="IS_DELETE" label="是否删除" displaytype="hidden"/>
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden"/>
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden"/>
+				<col column="{non-fromdb}" property="edit" label="编辑" width="10%"/>
+			</display>
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								t1.PRODUCT_ID,
+								t1.SUPPLIER_NAME,
+								t1.TENDER_ID,
+								t1.PRODUCT_BRAND,
+								t1.PRODUCT_KIND,
+								t1.PRODUCT_NAME,
+								t1.PRODUCT_SIZE,
+								t1.STOCK_NUM,
+								t1.PRODUCT_DETAIL,
+								t1.JD_PRICE,
+								t1.YHD_PRICE,
+								t1.TM_PRICE,
+								t1.GW_PRICE,
+								t1.PRODUCT_PRICE_URL,
+								t1.SETTLE_PRICE_CONTAIN_POSTAGE,
+								t1.EXPRESS_RANGE,
+								t1.INVOICE_TYPE,
+								t1.REMARK,
+								t1.STATUS,
+								t1.STATUS as STATUS_CODE,
+								t1.SETTLE_PRICE_UPDATE,
+								t3.nums,
+								t1.SCORE,
+								t1.REMARK2,
+								t1.IS_DELETE,
+								t1.CREATE_USER,
+								t1.CREATE_TIME,
+								t1.UPDATE_USER,
+								t1.UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO t1
+							left join (
+								SELECT
+									COUNT(REF_ID) as nums,
+									t2.TENDER_ID,
+									t2.PRODUCT_ID
+								FROM
+									t_product_ref_user t2
+								GROUP BY
+									t2.TENDER_ID,
+									t2.PRODUCT_ID
+								)t3 on t1.TENDER_ID=t3.TENDER_ID and t1.PRODUCT_ID=t3.PRODUCT_ID
+							 WHERE IS_DELETE=0 and {#condition#} 
+							 ORDER BY t3.nums DESC
+						 ]]>
+					</value>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+					     <value><![CDATA[(SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox>
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"/>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					
+					<condition name="PRODUCT_NAME" label="产品名称" >
+					     <value><![CDATA[(PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox>
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox >
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="STATUS" label="初审结果" defaultvalue="">
+						<value><![CDATA[(STATUS = '#data#')]]></value>
+						<inputbox type="selectbox">
+						<option value="" label="请选择" />
+							<option
+								dataset="@{SELECT DISTINCT ITEM_CODE,ITEM_NAME FROM R_BASE_DICT_ITEM  WHERE   ITEM_CODE='L00101' OR ITEM_CODE='L00105' OR ITEM_CODE='L00102'}"
+								value="ITEM_CODE" label="ITEM_NAME" />
+						</inputbox>
+					</condition>
+					<condition name="CUSTOMER_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(t1.TENDER_ID = '#data#')]]></value>
+					</condition>
+					<condition name="CREATE_USER" label="登录用户ID" hidden="true" source="session{LoginUser.loginUserId}">
+						<value><![CDATA[(case when '#data#'='2c8080fa45cb50840145cb5300310003' then 1=1 else t1.CREATE_USER = '#data#' end)]]></value>
+					</condition>
+			    </select>
+			    <insert pageurl="report{supplierInfoEdit.report1}"  urlparams="CUSTOMER_ID=rrequest{CUSTOMER_ID}"  popupparams="{title:'添加新商品分类',initsize:'max'}"></insert>
+			    <delete>
+			        UPDATE T_SUPPLIER_PRODUCT_INFO SET IS_DELETE='1' WHERE PRODUCT_ID=@{PRODUCT_ID};
+			    </delete>
+			</sql>
+			
+			<format>
+				<imports>
+				      <import>com.rongzer.rdp.web.domain.system.LoginUser</import>
+			    </imports>
+				<value>
+			  	<![CDATA[
+				  	String userId = (String)rrequest.getAttribute("LOGINUSER_USERID");
+					if("L00102".equals(STATUS_CODE)){
+						edit = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>";
+					}else{
+						edit = "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=readonly&PRODUCT_ID="+PRODUCT_ID+"',{title:'查看',initsize:'max'})\">查看</a>"+"  "
+		  					 + "<a href='#'' onclick=\"wx_winpage('ShowReport.wx?PAGEID=supplierInfoEdit&report1_ACCESSMODE=update&PRODUCT_ID="+PRODUCT_ID+"',{title:'编辑',initsize:'max'})\">编辑</a>";
+					
+					}
+				
+				  ]]>
+				</value>
+			</format>
+		</report>
+	</page>
+	<page id="supplierInfoEdit" js="/webresources/script/validate.js,/webresources/tips/js/tipso.js" title="供应商申请" >
+		<report id="report1" extends="baseListPage.baseReport" type="form" pagesize="-1" checkdirtydata="false" onload="hiddenButton">
+		 <header>
+          <![CDATA[
+          	<link rel="stylesheet" href="webresources/tips/css/tipso.css"/>
+            <script>
+            	function hiddenButton(){
+            		$("#btn_supplierInfoEdit_guid_report1_add_id").hide();
+            		$(".fresco").each(function(i){
+            			var objT=$(this).tipso({
+					        useTitle: false,
+					        background:'',
+					        content:"<img style='max-width:40rem' src='"+$(this).attr("href")+"'>"
+					    });
+            		});
+            	}
+            </script>
+            ]]>
+          </header>
+		<display pagecolselect="false">
+				<col displaytype="hidden" column="PRODUCT_ID" label="产品id" colspan="3" />
+				<col displaytype="hidden" column="TENDER_ID" label="招标项目ID" />
+				<col column="SUPPLIER_NAME" label="供应商名称" colspan="3">
+					<inputbox defaultvalue="session{LoginUser.loginUserName}" jsvalidatetype="both"   styleproperty="disabled='disabled'">
+						
+					</inputbox>
+				</col>
+				<col column="PRODUCT_BRAND" label="产品品牌" colspan="3">
+					<inputbox  jsvalidate="textareaLength4096(产品品牌不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="PRODUCT_KIND" label="产品型号（货号）">
+					<inputbox  jsvalidate="textareaLength4096(产品型号（货号）不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="PRODUCT_NAME" label="产品名称" colspan="3">
+					<inputbox type="textareabox" jsvalidate="textareaLength4096(产品名称不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="PRODUCT_SIZE" label="规格尺寸" colspan="3">
+					<inputbox type="textareabox" jsvalidate="textareaLength4096(规格尺寸不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="PRODUCT_DETAIL" label="详细说明" colspan="3">
+					<inputbox type="textareabox"  jsvalidate="textareaLength4096(详细说明不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="STOCK_NUM" label="承诺备货量">
+					<inputbox   defaultvalue="0"/>
+				</col>
+				<col column="JD_PRICE" label="京东价格" >
+					<inputbox  defaultvalue="0"/>
+				</col>
+				<col column="YHD_PRICE" label="一号店价格">
+					<inputbox   defaultvalue="0"/>
+				</col>
+				<col column="TM_PRICE" label="天猫价格">
+					<inputbox   defaultvalue="0"/>
+				</col>
+				<col column="GW_PRICE" label="官网价格">
+					<inputbox  defaultvalue="0"/>
+				</col>
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）">
+					<inputbox  jsvalidate="isNotEmpty(${invalid.isnotempty})" jsvalidatetype="both" defaultvalue="0"/>
+				</col>
+				<!-- <col column="SETTLE_PRICE_UPDATE" label="结算价修改项" defaultvalue="0">
+					<inputbox   />
+				</col> -->
+				<col column="INVOICE_TYPE" label="开票种类">
+					<inputbox  jsvalidate="textareaLength64(开票种类不能超过64个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="PRODUCT_PRICE_URL" label="市场价网址汇总" colspan="3">
+					<inputbox type="textareabox"  jsvalidate="textareaLength4096(市场价网址汇总不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="EXPRESS_RANGE" label="快递范围" colspan="3">
+					<inputbox type="textareabox" jsvalidate="textareaLength4096(快递范围不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				<col column="{non-fromdb}" property="fileupload1" label="图片"  valuestyleproperty="UPLOADPLUSFILES(PRODUCT_ID);" />
+				<col column="{non-fromdb}" property="fileupload2" label="资质文件"  styleproprety="class='jTip'"  valuestyleproperty="UPLOADPLUSFILES(PRODUCT_ID,,FILE);" />
+				
+				<col column="REMARK" label="备注">
+					<inputbox  jsvalidate="textareaLength4096(备注不能超过4096个字符)" jsvalidatetype="both" />
+				</col>
+				
+			<!-- 	<col column="STATUS" label="运营审核项" >
+					<inputbox   />
+				</col>
+				<col column="SCORE" label="评估委员会评估值">
+					<inputbox  jsvalidate="isNumeric(${invalid.isNumeric})" jsvalidatetype="both" />
+				</col>
+				<col  column="REMARK2" label="评估备注信息">
+					<inputbox  jsvalidate="textareaLength255(备注信息不能超过255个字符)" jsvalidatetype="both" />
+				</col> -->
+			</display>
+			<sql aftersave="refreshParentForm">
+				<select>
+					<value>
+					    <![CDATA[
+					    	SELECT
+								PRODUCT_ID,
+								SUPPLIER_NAME,
+								TENDER_ID,
+								PRODUCT_BRAND,
+								PRODUCT_KIND,
+								PRODUCT_NAME,
+								PRODUCT_SIZE,
+								STOCK_NUM,
+								PRODUCT_DETAIL,
+								JD_PRICE,
+								YHD_PRICE,
+								TM_PRICE,
+								GW_PRICE,
+								PRODUCT_PRICE_URL,
+								SETTLE_PRICE_CONTAIN_POSTAGE,
+								EXPRESS_RANGE,
+								INVOICE_TYPE,
+								REMARK,
+								SETTLE_PRICE_UPDATE,
+								STATUS,
+								SCORE,
+								REMARK2,
+								IS_DELETE,
+								CREATE_USER,
+								CREATE_TIME,
+								UPDATE_USER,
+								UPDATE_TIME
+							FROM
+								T_SUPPLIER_PRODUCT_INFO
+							 WHERE IS_DELETE=0 and {#condition#} 
+					    ]]>
+					</value>
+					<condition name="PRODUCT_ID" label="产品ID" hidden="true">
+						<value><![CDATA[PRODUCT_ID = '#data#']]></value>
+					</condition>
+					<condition name="TENDER_ID" label="招标ID" hidden="true">
+						<value><![CDATA[TENDER_ID = '#data#']]></value>
+					</condition>
+				</select>
+				<insert>
+			   		<params>
+						<param name="PRODUCT_ID" value="uuid{}"></param>
+						<param name="TENDER_ID" value="url{CUSTOMER_ID}"></param>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+		            INSERT INTO T_SUPPLIER_PRODUCT_INFO (
+            				PRODUCT_ID,
+							SUPPLIER_NAME,
+							TENDER_ID,
+							PRODUCT_BRAND,
+							PRODUCT_KIND,
+							PRODUCT_NAME,
+							PRODUCT_SIZE,
+							STOCK_NUM,
+							PRODUCT_DETAIL,
+							JD_PRICE,
+							YHD_PRICE,
+							TM_PRICE,
+							GW_PRICE,
+							PRODUCT_PRICE_URL,
+							SETTLE_PRICE_CONTAIN_POSTAGE,
+							EXPRESS_RANGE,
+							INVOICE_TYPE,
+							REMARK,
+							<!-- SETTLE_PRICE_UPDATE, -->
+						 	STATUS,
+							<!--SCORE,
+							REMARK2, -->
+							IS_DELETE,
+							CREATE_USER,
+							CREATE_TIME,
+							UPDATE_USER,
+							UPDATE_TIME
+		            )VALUES 
+		            (		
+		            		#{PRODUCT_ID},
+							@{SUPPLIER_NAME},
+							#{TENDER_ID},
+							@{PRODUCT_BRAND},
+							@{PRODUCT_KIND},
+							@{PRODUCT_NAME},
+							@{PRODUCT_SIZE},
+							IFNULL(@{STOCK_NUM},0),
+							@{PRODUCT_DETAIL},
+							IFNULL(@{JD_PRICE},0),
+							IFNULL(@{YHD_PRICE},0),
+							IFNULL(@{TM_PRICE},0),
+							IFNULL(@{GW_PRICE},0),
+							@{PRODUCT_PRICE_URL},
+							IFNULL(@{SETTLE_PRICE_CONTAIN_POSTAGE},0),
+							@{EXPRESS_RANGE},
+							@{INVOICE_TYPE},
+							@{REMARK},
+							<!-- IFNULL(@{SETTLE_PRICE_UPDATE},0), -->
+							'L00101',
+							<!--@{SCORE},
+							@{REMARK2}, -->
+							'0',
+							#{userId},
+							#{NOWTIME},
+							#{userId},
+							#{NOWTIME}
+		            )
+		            </value>
+		        </insert>
+		        <update>
+		            <params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+		            UPDATE T_SUPPLIER_PRODUCT_INFO SET
+						SUPPLIER_NAME=@{SUPPLIER_NAME},               
+						TENDER_ID=@{TENDER_ID},                   
+						PRODUCT_BRAND=@{PRODUCT_BRAND},               
+						PRODUCT_KIND=@{PRODUCT_KIND},                
+						PRODUCT_NAME=@{PRODUCT_NAME},                
+						PRODUCT_SIZE=@{PRODUCT_SIZE},                
+						STOCK_NUM=@{STOCK_NUM},                   
+						PRODUCT_DETAIL=@{PRODUCT_DETAIL},              
+						JD_PRICE=@{JD_PRICE},                    
+						YHD_PRICE=@{YHD_PRICE},                   
+						TM_PRICE=@{TM_PRICE},                    
+						GW_PRICE=@{GW_PRICE},                    
+						PRODUCT_PRICE_URL=@{PRODUCT_PRICE_URL},           
+						SETTLE_PRICE_CONTAIN_POSTAGE=@{SETTLE_PRICE_CONTAIN_POSTAGE},
+						EXPRESS_RANGE=@{EXPRESS_RANGE},               
+						INVOICE_TYPE=@{INVOICE_TYPE},                
+						REMARK=@{REMARK},   
+						STATUS=case when STATUS='L00105' then 'L00101' else STATUS end,                   
+					<!-- 	SETTLE_PRICE_UPDATE=@{SETTLE_PRICE_UPDATE},          -->
+					<!-- 	                      
+						SCORE=@{SCORE},                       
+						REMARK2=@{REMARK2},          -->            
+						UPDATE_USER=#{userId},                 
+						UPDATE_TIME=#{NOWTIME}  
+					WHERE PRODUCT_ID=@{PRODUCT_ID};
+		            </value>
+		        </update>
+			</sql>
+		</report>
+	</page>
+</applications>

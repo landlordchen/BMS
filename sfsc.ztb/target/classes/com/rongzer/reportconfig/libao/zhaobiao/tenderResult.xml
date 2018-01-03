@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="page_loginuser_list" js="/webresources/script/validate.js" title="评分结果">
+		<report id="report1" type="editablelist2" extends="baseListPage.baseReport" rowselect="checkbox" >
+			<header>
+     			<![CDATA[
+     				<script>
+					//根据勾选项提交
+						function deleteSelected(){
+							//获取被选择的行数据
+			  				var prIdList = getListReportSelectedTrDatas("choseProduct","report2",false,true,false);
+			  				if (prIdList != null&&prIdList.length>0){
+               					//将ID变为数组
+               					var prIds = new Array();
+               					for(var i=0;i<prIdList.length;i++) {
+									var rowDataObj=prIdList[i];//取到本行各列的数据
+									var prId =rowDataObj["REF_ID"].oldvalue;
+									prIds.push(prId);
+								}
+								if(prIds.length>0){
+					  				$.ajax({
+					  				 	type: "POST",
+										url:"audit/delteSelected.htm",
+										dataType:"JSON",
+										data:{prIds:JSON.stringify(prIds)},
+										success:function(data){
+											if("error"===data){
+												wx_error("操作失败！");
+											}else{
+												wx_success("删除成功！");
+											}
+											//刷新报表
+											window.refreshComponentDisplay("choseProduct", "report2", false);
+										}
+									});
+								}else{
+									wx_alert("没有价格审核通过的数据！");
+								}
+               				}else{
+               					wx_alert("至少选择一条数据!");
+               				}
+						}
+					</script>
+     			]]>
+     		</header>
+			<display pagecolselect="false">
+				<col column="REF_ID" label="主键ID" displaytype="hidden"/>
+				<col column="TENDER_ID" label="招标项目ID" displaytype="hidden"/>
+				<col column="PRODUCT_ID" label="产品ID" displaytype="hidden"/>
+				<col column="SUPPLIER_NAME" label="供应商名称" />
+				<col column="PRODUCT_BRAND" label="产品品牌" />
+				<col column="PRODUCT_KIND" label="产品型号（货号）" />
+				<col column="PRODUCT_NAME" label="产品名称" />
+				<col column="PRODUCT_SIZE" label="规格尺寸" />
+				<col column="STOCK_NUM" label="承诺备货量" />
+				<col column="JD_PRICE" label="京东价格" />
+				<col column="YHD_PRICE" label="一号店价格" />
+				<col column="TM_PRICE" label="天猫价格" />
+				<col column="GW_PRICE" label="官网价格" />
+				<col column="SETTLE_PRICE_CONTAIN_POSTAGE" label="结算价（包邮价格）" />
+				<col column="INVOICE_TYPE" label="开票种类" />
+				<col column="REMARK" label="备注" />
+				<col column="CREATE_USER" label="创建人" displaytype="hidden"/>
+				<col column="CREATE_TIME" label="创建时间" displaytype="hidden"/>
+				
+			</display>
+			<sql aftersave="refreshParentForm">
+			    <select>
+					<value>
+					    <![CDATA[
+							SELECT
+								t1.REF_ID,
+								t1.TENDER_ID,
+								t1.PRODUCT_ID,
+								t2.SUPPLIER_NAME,
+								t2.PRODUCT_NAME,
+								t2.PRODUCT_KIND,
+								t2.PRODUCT_BRAND,
+								t2.PRODUCT_SIZE,
+								t2.STOCK_NUM,
+								t2.JD_PRICE,
+								t2.YHD_PRICE,
+								t2.TM_PRICE,
+								t2.GW_PRICE,
+								t2.SETTLE_PRICE_CONTAIN_POSTAGE,
+								t2.INVOICE_TYPE,
+								t2.REMARK,
+								t1.CREATE_USER,
+								t1.CREATE_TIME
+							FROM
+								t_product_ref_user t1
+							INNER JOIN t_supplier_product_info t2 on t1.product_id=t2.PRODUCT_ID
+							where {#condition#} 
+							GROUP BY
+								t1.tender_id,
+								t1.product_id
+						 ]]>
+					</value>
+					<condition name="NODE_ID" label="招标ID" hidden="true">
+						<value><![CDATA[(t1.TENDER_ID = '#data#')]]></value>
+					</condition>
+					
+					<condition name="CREATE_USER" label="userId" hidden="true">
+						<value><![CDATA[(t1.CREATE_USER = '#data#')]]></value>
+					</condition>
+					<condition name="SUPPLIER_NAME" label="供应商名称" >
+						<value><![CDATA[(t2.SUPPLIER_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="SUPPLIER_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT SUPPLIER_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_NAME" label="产品名称" >
+						<value><![CDATA[(t2.PRODUCT_NAME like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:40px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_NAME" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_NAME FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+					<condition name="PRODUCT_BRAND" label="产品品牌" >
+						<value><![CDATA[(t2.PRODUCT_BRAND like '%#data#%')]]></value>
+						<inputbox styleproperty="style='margin-left:80px;width:120px' ">
+							<typeprompt count="15" width="250" casesensitive="false">
+								<promptcol label="PRODUCT_BRAND" title="RC" matchmode="anywhere"></promptcol>
+								<datasource>
+									<option
+										dataset="@{SELECT DISTINCT PRODUCT_BRAND FROM T_SUPPLIER_PRODUCT_INFO WHERE IS_DELETE=0 AND  {#matchcondition#}}"></option>
+								</datasource>
+							</typeprompt>
+						</inputbox>
+					</condition>
+				</select>
+			</sql>
+			<buttons>
+				<button name="btn1" position="title" label="移除" extends="${wabacus.button.default}">
+	              	deleteSelected()
+	          </button>
+			</buttons>
+			
+		</report>
+	</page>
+</applications>

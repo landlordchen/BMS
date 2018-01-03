@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:05:08 CST 2016
+@default-artifactory-http\://172.0.0.30\:8080/artifactory/plugins-releases/.lastUpdated=1481871908418
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871908618
+http\://172.0.0.30\:8080/artifactory/plugins-releases/.error=Could not transfer artifact org.codehaus.plexus\:plexus-interpolation\:pom\:1.15 from/to artifactory (http\://172.0.0.30\:8080/artifactory/plugins-releases)\: Connection refused

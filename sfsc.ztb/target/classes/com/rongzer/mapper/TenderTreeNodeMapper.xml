@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 活动信息管理 管理 -->
+<mapper namespace="com.rongzer.mapper.TenderTreeNodeMapper">
+	
+	<!-- 主活动 结果集 -->
+	<resultMap id="rTenderInfo" type="com.rongzer.controller.CustomerTreeNodeModel">
+		<result column="TENDER_ID" property="id" jdbcType="VARCHAR" />
+		<result column="TENDER_NAME" property="name" jdbcType="VARCHAR" />
+		<result column="URL" property="url" jdbcType="VARCHAR" />
+		<result column="LEVEL" property="level" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 子活动 结果集 -->
+	<resultMap id="rChildTenderList" type="com.rongzer.controller.CustomerTreeNodeModel">
+		<result column="TENDER_ID" property="id" jdbcType="VARCHAR" />
+		<result column="TENDER_NAME" property="name" jdbcType="VARCHAR" />
+		<result column="NODE_TYPE" property="nodeType" jdbcType="VARCHAR" />
+		<result column="URL" property="url" jdbcType="VARCHAR" />
+		<result column="LEVEL" property="level" jdbcType="VARCHAR" />
+		<result column="PARENT_ID" property="parentId" jdbcType="VARCHAR" />
+	</resultMap>
+	
+
+	<!-- 获取 活动信息 -->
+	<select id="getTenderInfo" parameterType="map"  resultMap="rTenderInfo">
+		 SELECT
+			TENDER_ID,
+			TENDER_NAME,
+			 CONCAT('jsp/mainnwp.jsp?funcid=M4000&amp;tenderid=',#{ternderId}) as URL,
+			'1' AS LEVEL
+		FROM
+			T_TENDER_INFO
+		WHERE
+			TENDER_ID = #{ternderId}
+	</select>
+	
+	<!-- 获取 子活动信息 -->
+	<select id="getChildTenderList" parameterType="map" resultMap="rChildTenderList">
+		 SELECT TENDER_ID,TENDER_NAME,
+		 CONCAT('jsp/mainnwp.jsp?funcid=M4000&amp;tenderid=',#{ternderId}) as URL,
+		 '2' AS LEVEL,PARENT_ID 
+		 FROM T_TENDER_INFO WHERE PARENT_ID = #{ternderId}
+	</select>
+
+</mapper>

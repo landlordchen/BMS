@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns="http://www.wabacus.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.resources.xsd">
+    <!-- 最大字符长度 -->
+    <resource key="invalid.textLength">
+        <![CDATA[#label#最多可以输入{len}个字符或{zhlen}个汉字]]>
+    </resource>
+    
+    <!-- 非空 -->
+    <resource key="invalid.isnotempty">
+        <![CDATA[#label#不能为空]]>
+    </resource>
+    <!-- 数字不合法 -->
+    <resource key="invalid.number">
+        <![CDATA[#data#不是合法数字]]>
+    </resource>
+    <!-- 数字不合法 -->
+    <resource key="invalid.isNumeric">
+        <![CDATA[#label#必须是数字]]>
+    </resource>
+    <!-- 数字为整数-->
+    <resource key="invalid.isInteger">
+        <![CDATA[#label#为整数]]>
+    </resource>
+    <!-- 不能为负数 -->
+    <resource key="invalid.isNotNegNumber">
+        <![CDATA[#label#不能为负数]]>
+    </resource>
+    <!-- 最大值1-->
+    <resource key="invalid.isMax1">
+        <![CDATA[#label#最大值为9.9]]>
+    </resource>
+    <!-- 最大值2 -->
+    <resource key="invalid.isMax2">
+        <![CDATA[#label#最大值为99.99]]>
+    </resource>
+    <!-- 最大值3 -->
+    <resource key="invalid.isMax3">
+        <![CDATA[#label#最大值为999.99]]>
+    </resource>
+    <!-- 最大值4 -->
+    <resource key="invalid.isMax4">
+        <![CDATA[#label#最大值为9999.99]]>
+    </resource>
+    <!-- 最大值5 -->
+    <resource key="invalid.isMax5">
+        <![CDATA[#label#最大值为99999.99]]>
+    </resource>
+    
+    <!--  3-->
+    <resource key="invalid.isThreeBitsDecimal">
+        <![CDATA[#label#不大于1位数]]>
+    </resource>
+    <!--  4-->
+    <resource key="invalid.isFourBitsDecimal">
+        <![CDATA[#label#不大于2位数]]>
+    </resource>
+    <!--  5-->
+    <resource key="invalid.isFiveBitsDecimal">
+        <![CDATA[#label#不大于3位数]]>
+    </resource>
+    <!--  6-->
+    <resource key="invalid.isSixBitsDecimal">
+        <![CDATA[#label#不大于4位数]]>
+    </resource>
+    <!--  7-->
+    <resource key="invalid.isSevenBitsDecimal">
+        <![CDATA[#label#不大于5位数]]>
+    </resource>
+    <!--  8-->
+    <resource key="invalid.isEightBitsDecimal">
+        <![CDATA[#label#不大于6位数]]>
+    </resource>
+    <!-- 9 -->
+    <resource key="invalid.isNineBitsDecimal">
+        <![CDATA[#label#不大于7位数]]>
+    </resource>
+    <!-- 10 -->
+    <resource key="invalid.isTenBitsDecimal">
+        <![CDATA[#label#不大于8位数]]>
+    </resource>
+    <!-- 12 -->
+    <resource key="invalid.isTwelveBitsDecimal">
+        <![CDATA[#label#不大于10位数]]>
+    </resource>
+    <!-- 14 -->
+    <resource key="invalid.isFourteenBitsDecimal">
+        <![CDATA[#label#不大于12位数]]>
+    </resource>
+    
+    <!-- 最大字符长度 -->
+    <resource key="invalid.isStrLen16">
+        <![CDATA[#label#最多可以输入8个汉字]]>
+    </resource>
+    <!-- 最大字符长度 -->
+    <resource key="invalid.isStrLen32">
+        <![CDATA[#label#最多可以输入16个汉字]]>
+    </resource>
+    <!-- 最大字符长度  -->
+    <resource key="invalid.isStrLen64">
+        <![CDATA[#label#最多可以输入32个汉字]]>
+    </resource>
+    <!-- 最大字符长度  -->
+    <resource key="invalid.isStrLen128">
+        <![CDATA[#label#最多可以输入64个汉字]]>
+    </resource>
+    <!-- 最大字符长度  -->
+    <resource key="invalid.isStrLen256">
+        <![CDATA[#label#最多可以输入128个汉字]]>
+    </resource>
+    <!-- 最大字符长度  -->
+    <resource key="invalid.isStrLen1024">
+        <![CDATA[#label#最多可以输入512个汉字]]>
+    </resource>
+    
+    <!-- 增长率 -->
+    <resource key="invalid.isContainNegNumber">
+        <![CDATA[#label#为-100%~100%之间的数值]]>
+    </resource>
+    
+    <!-- 比例 -->
+    <resource key="invalid.isRateNumber">
+        <![CDATA[#label#最大值99.99]]>
+    </resource>
+    
+    <!-- data-->
+    <resource key="invalid.isDate">
+        <![CDATA[#data#格式不对，必须为yyyy-MM-dd格式]]>
+    </resource>
+    
+    <!-- limit-->
+    <resource key="invalid.isLimit">
+        <![CDATA[#data#超过#label#的上限值]]>
+    </resource>
+    <!-- 不是有效的-->
+    <resource key="invalid.isDisEnableUser">
+        <![CDATA[#data#不是一个有效的直属客户]]>
+    </resource>
+    
+    <!-- email-->
+    <resource key="invalid.isEmail">
+        <![CDATA[#label#必须为有效的邮箱]]>
+    </resource>
+
+    <!-- 验证简单字符-->
+    <resource key="invalid.isSimpleStr">
+        <![CDATA[#label#只能输入字母数字或下划线！]]>
+    </resource> 
+        
+    <!-- 格式不正确-->
+    <resource key="invalid.isErrorFormate">
+        <![CDATA[#label#格式不正确!]]>
+    </resource>
+    
+</resources>

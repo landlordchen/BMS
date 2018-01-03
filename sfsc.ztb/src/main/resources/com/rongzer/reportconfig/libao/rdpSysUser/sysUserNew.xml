@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!-- 用户列表，根据左边树节点查询 -->
+	<page id="sysUserListNew" title="用户管理" js="/resource/libs/js/json2.js">
+		<report id="report1" extends="sysUserList.report1" rowselect="multiple-checkbox"
+			dataexport="richexcel">
+			<dataexports filename="用户一览"/>
+			<display pagecolselect="false">
+				<col column="USER_ID" label="用户ID" displaytype="hidden" />
+				<col column="GROUP_ID" label="组织机构ID" displaytype="hidden" />
+				<col column="ACCOUNT"  align='left' label="登录账号" />
+				<col column="NAME_CN"  align='left' label="中文名" />
+				<col column="NAME_EN" align='left' label="英文名"  clickorderby="true" />
+				<col column="PARENT_NAME"  valuestyleproperty="DICT" align='left' label="所属组织"></col>
+				<col column="POST" align='left' label="部门" valuestyleproperty="DICT" />
+				<col column="NICKNAME"  align='left' label="昵称" clickorderby="true" displaytype="hidden"/>
+				<col column="PASSWORD" label="登录密码" displaytype="hidden" />
+				<col column="SEX"  valuestyleproperty="DICT" align='center' label="性别" />
+				<col column="PHONE"  align='right' label="电话" />
+				<col column="ADDRESS" align='left' label="地址"  />
+				<col column="MSN" align='left'  label="MSN" displaytype="hidden" />
+				<col column="EMAIL" align='left'  label="Email" />
+				<col column="ROLE_NAME" align='left'  label="角色" />
+				<col column="REMARK" label="备注" />
+				<col column="UPDATE_PASSWORD_TIME" displaytype="hidden" label="密码修改时间" />
+				<col column="STATUS" label="排序" displaytype="hidden"/>
+				<col column="IS_DELETE" label="是否删除" displaytype="hidden" />
+				<col column="ADD_TIME" label="新增时间" displaytype="hidden" />
+				<col column="ADD_USER" label="新增人" displaytype="hidden" />
+				<col column="UPDATE_TIME" label="更新时间" displaytype="hidden" />
+				<col column="UPDATE_USER" label="更新人" displaytype="hidden" />
+			</display>
+			<sql preparedstatement="false">
+				<select>
+					<value>
+						<![CDATA[
+							SELECT
+							(SELECT 
+								GROUP_CONCAT(ROLE_NAME)  
+							 FROM 
+							 	R_SYS_ROLE_INFO r 
+							 LEFT JOIN 
+							 	R_SYS_USER_ROLE ur 
+						 	 ON 
+						 	 	ur.ROLE_ID=R.ROLE_ID 
+					 	 	 where 
+					 	 	 	ur.USER_ID=t1.USER_ID
+				 	 	 	) ROLE_NAME,
+							t1.USER_ID,
+							t1.GROUP_ID,
+							t1.NAME_CN,
+							t1.NAME_EN,
+							t1.NICKNAME,
+							t1.ACCOUNT,
+							t1. PASSWORD,
+							t1.POST,
+							t1.GROUP_ID PARENT_NAME,
+							t1.SEX,
+							t1.PHONE,
+							t1.ADDRESS,
+							t1.MSN,
+							t1.EMAIL,
+							t1.REMARK,
+							t1.UPDATE_PASSWORD_TIME,
+							t1. STATUS,
+							t1.IS_DELETE,
+							t1.ADD_TIME,
+							t1.ADD_USER,
+							t1.UPDATE_TIME,
+							t1.UPDATE_USER
+						FROM
+							r_sys_user_info t1
+						 WHERE t1.IS_DELETE=0 AND {#condition#} ORDER BY t1.NAME_CN ]]>
+					</value>
+					<condition name="GROUP_ID" hidden="true"/>
+					<condition name="NAME_CN" label="中文（英文）名">
+						<value><![CDATA[(NAME_CN like  '%#data#%' or NAME_EN like  '%#data#%')]]></value>
+						<inputbox></inputbox>
+					</condition>
+					<condition name="ACCOUNT" label="登录账号">
+						<value><![CDATA[(ACCOUNT like  '%#data#%' )]]></value>
+						<inputbox></inputbox>
+					</condition>
+					<condition name="ALLCHILD_NODEVALUE" keepkeywords="true" hidden="true">
+			            <value> <![CDATA[GROUP_ID IN ( #data# )]]>
+			            </value>
+			         </condition>
+				</select>
+				<insert pageurl="report{sysUserEditNew.report1}" urlparams="GROUP_ID=rrequest{GROUP_ID};" popupparams="{title:'新增用户',initsize:'max'}"></insert>
+				<update pageurl="report{sysUserEditNew.report1}" urlparams="USER_ID=@{USER_ID};GROUP_ID=@{GROUP_ID};" popupparams="{title:'编辑用户',initsize:'max'}"></update>
+				<delete>UPDATE R_SYS_USER_INFO SET IS_DELETE=1 WHERE USER_ID =
+					@{USER_ID__old};</delete>
+			</sql>
+		</report>
+	</page>
+	<!-- 新增编辑和修改数据 -->
+	<page id="sysUserEditNew" title="用户管理" js="/webresources/script/validate.js,/resource/libs/js/json2.js">
+		<report id="report1" extends="sysUserEdit.report1" savedatatype="all">
+			<display labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="USER_ID" displaytype="hidden" />
+				<col column="GROUP_ID" displaytype="hidden" />
+				<col column="{non-fromdb}" property="GROUP_NAME" label="所属组织" labelstyleproperty="name='displayCol' " valuestyleproperty="colspan=3"  br="true">
+		          <inputbox type="popupbox" popupparams="width:400,height:450"  displayon="insert|update"  
+		            styleproperty="style='width:28%;'" jsvalidatetype="both">
+		              <![CDATA[/rdp/rdpTreeSelect.htm?id=R2&type=radio&codecol=GROUP_ID]]>
+		          </inputbox>
+		        </col>   
+				<col column="ACCOUNT" label="登录账号">
+					<inputbox servervalidate="isUnique(登录账号#data#已经存在,R_SYS_USER_INFO,ACCOUNT,is_delete='0')"
+						servervalidatetype="both" jsvalidate="isNotEmpty(#label#不能为空);textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="NAME_CN" label="中文名" br="true">
+					<inputbox jsvalidate="isNotEmpty(#label#不能为空);textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="NAME_EN" label="英文名">
+					<inputbox  jsvalidate="textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="NICKNAME" label="昵称" br="true">
+					<inputbox jsvalidate="textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both" ></inputbox>
+				</col>
+				<col column="SEX" label="性别">
+					<inputbox type="selectbox" defaultvalue="0">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D004_hasempty"></option>
+			     	</inputbox>
+				</col>
+				<col column="POST" label="部门" br="true">
+					<inputbox type="selectbox" >
+					     <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D132_hasempty"></option>
+				    </inputbox>
+				</col>
+				<col column="PHONE" label="电话">
+					<inputbox jsvalidate="textareaLength16(#label#最大长度为16个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="EMAIL" label="邮箱" br="true">
+					<inputbox jsvalidate="isEmail(#label#必须为有效的邮箱);textareaLength128(#label#最大长度为128个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				
+				<col column="MSN" label="MSN" displaytype="hidden">
+				</col>
+				
+				<col column="PASSWORD" label="密码"  br="true" defaultvalue="request{USER_DEFAULT_PWD}">
+				    <inputbox type="passwordbox" jsvalidate="textareaLength16(#label#最大长度为16个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				
+				<col column="ADDRESS" label="地址" br="true" valuestyleproperty="colspan=3">
+					<inputbox styleproperty="style='width:100%'" jsvalidate="textareaLength128(#label#最大长度为128个字符);" jsvalidatetype="both" ></inputbox>
+				</col>
+				<col column="REMARK" label="备注" valuestyleproperty="colspan=3" br="true">
+					<inputbox jsvalidate="textareaLength256(#label#最大长度为256个字符);" jsvalidatetype="both" type="textareabox" styleproperty="style='width:100%' rows='3'"></inputbox>
+				</col>
+				<col column="STATUS"  label="状态" displaytype="hidden"></col>
+				<col column="IS_DELETE" label="是否删除"  displaytype="hidden"/>
+		        <col column="ADD_TIME" label="新增时间" displaytype="hidden"/>
+		        <col column="ADD_USER" label="新增人"  displaytype="hidden"/>
+		        <col column="UPDATE_TIME" label="更新时间"  displaytype="hidden"/>
+		        <col column="UPDATE_USER" label="更新人"   displaytype="hidden"/>
+			</display>
+			<format>
+		       <imports>
+			     <import>com.wabacus.util.*</import>
+			     <import>java.util.*</import>
+			     <import>com.rongzer.rdp.common.service.RDPUtil</import>
+			     <import>com.rongzer.rdp.web.service.common.DictService</import>
+			     <import>com.rongzer.rdp.web.service.system.ParseDictService</import>
+		         <import>com.wabacus.system.*</import>
+		      </imports>
+		      <value>
+			   <![CDATA[
+					rrequest.getRequest().setAttribute("userId",rrequest.getAttribute("USER_ID"));
+					if(GROUP_ID==null||"".equals(GROUP_ID)){
+						GROUP_ID =rrequest.getRequest().getParameter("GROUP_ID");
+					}
+		            String groupNameSql="SELECT GROUP_FULL_NAME from R_SYS_GROUP_INFO WHERE GROUP_ID ='"+GROUP_ID+"'";
+		            Map mapgroup = RDPUtil.queryRowData(groupNameSql);
+		            GROUP_NAME = (String)mapgroup.get("GROUP_FULL_NAME");
+				  ]]>
+			  </value>
+		   </format>
+			<sql  beforesave="saveRoleData" savebinding="report2">
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM R_SYS_USER_INFO WHERE {#condition#}]]>
+					</value>
+					<condition name="USER_ID" hidden="true">
+						<value><![CDATA[(USER_ID = '#data#' )]]></value>
+					</condition>
+				</select>
+				<insert>
+					<params>
+                        <param name="PASSWORD" value="request{USER_DEFAULT_PWD}"></param>
+					    <param name="USERID" value="uuid{USERID}"/>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						insert into
+						R_SYS_USER_INFO(USER_ID=#{USERID},GROUP_ID=@{GROUP_ID},@{NAME_CN},@{NAME_EN},@{NICKNAME},@{POST},
+						@{ACCOUNT},PASSWORD=@{PASSWORD},@{SEX},@{PHONE},@{ADDRESS},@{MSN},@{EMAIL},@{REMARK},UPDATE_PASSWORD_TIME=#{NOWTIME},
+						@{STATUS},IS_DELETE=0,ADD_TIME=#{NOWTIME},ADD_USER=#{userId},UPDATE_TIME=#{NOWTIME},UPDATE_USER=#{userId});
+					</value>
+				</insert>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE R_SYS_USER_INFO
+						(@{GROUP_ID},@{NAME_CN},@{NAME_EN},@{NICKNAME},@{POST},@{ACCOUNT},PASSWORD=@{PASSWORD},@{SEX},
+						@{PHONE},@{ADDRESS},@{MSN},@{EMAIL},@{REMARK},UPDATE_TIME=#{NOWTIME},UPDATE_USER=#{userId})
+						where USER_ID=@{USER_ID__old};
+					</value>
+				</update>
+			</sql>
+			 <interceptor>
+                <imports>
+                     <import>java.util.*</import>
+                     <import>com.rongzer.rdp.auth.system.util.DataRoleUtils</import>
+                     <import>com.rongzer.rdp.common.service.RDPUtil</import>
+                </imports>
+                <preaction>
+                  <![CDATA[
+                    String strUserDefaultPwd = RDPUtil.getSysConfig("rdp.user.defaultpwd");
+                    if (strUserDefaultPwd == null || strUserDefaultPwd.length()<1)
+                    {
+                        strUserDefaultPwd = "123456789";
+                    }else
+                    {
+                        strUserDefaultPwd = strUserDefaultPwd.trim();
+                    }
+                    
+                    rrequest.getRequest().setAttribute("USER_DEFAULT_PWD",strUserDefaultPwd);
+                  ]]>
+                </preaction>
+            </interceptor>  
+		</report>
+
+		<report id="report2" extends="sysUserEdit.report2" type="editablelist2" pagesize="-1" rowselect="checkbox" depends="report1" dependstype="hidden" dependsparams="USER_ID=@{USER_ID}">
+		    <display pagecolselect="false">
+		    	<col   column="{col-rowselect}" width="40"/>
+		    	<col column="USER_ID" displaytype="hidden"/>
+		    	<col column="RELATIVE_ID" displaytype="hidden"/>
+		    	<col column="ROLE_ID" displaytype="hidden"/>
+				<col column="ROLE_DESC" displaytype="hidden"/>
+				<col column="ROLE_NAME" label="角色"  align="left" width="400px">
+					<inputbox  jsvalidate="isNotEmpty(#label#不能为空)" jsvalidatetype="both" type="selectbox" styleproperty="style='width:250px'"  displayon="insert|update">
+						<autocomplete columns="ROLE_ID;ROLE_NAME;" colvaluecondition="ROLE_NAME='#ROLE_NAME#'" 
+							dataset="select ROLE_ID,ROLE_NAME from r_sys_role_info where IS_DELETE=0 AND {#condition#}">
+						</autocomplete>
+						
+						<option label="ROLE_NAME" value="ROLE_NAME" dataset="select ROLE_ID,ROLE_NAME from r_sys_role_info where IS_DELETE=0"></option>
+					</inputbox>
+				</col>
+				<col column="data_permissions_type" label="数据权限" displaytype="hidden"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						SELECT A.ROLE_ID,
+						       A.ROLE_NAME,
+						       B.USER_ID,
+						       B.RELATIVE_ID,
+						       DATA_PERMISSIONS_TYPE,
+						       ROLE_DESC
+						  FROM R_SYS_ROLE_INFO A 
+						  LEFT JOIN R_SYS_USER_ROLE B ON A.ROLE_ID=B.ROLE_ID
+						  WHERE IS_DELETE ='0'   AND {#condition#}
+					</value>
+                    <condition name="USER_ID" hidden="true" defaultvalue="0">
+                        <value><![CDATA[(USER_ID = '#data#' )]]></value>
+                    </condition>
+                    
+				</select>
+				<insert>
+					<params>
+						<param name="RELATIVE_ID" value="uuid{}"></param>
+			          </params>
+					<value>
+						INSERT INTO R_SYS_USER_ROLE 
+						(
+							RELATIVE_ID,USER_ID,ROLE_ID
+						)
+					VALUES
+						(
+						#{RELATIVE_ID},
+						@{USER_ID},
+						@{ROLE_ID}
+						
+						)
+					</value>
+				</insert>	
+				<update>
+					<value>
+						UPDATE R_SYS_USER_ROLE 
+						SET ROLE_ID=@{ROLE_ID}
+						WHERE RELATIVE_ID=@{RELATIVE_ID}
+					</value>
+				</update>
+				<delete>
+					<value>
+						DELETE FROM R_SYS_USER_ROLE  WHERE RELATIVE_ID=@{RELATIVE_ID}
+					</value>
+				</delete>
+			</sql>
+           <format>
+               <imports>
+                    <import>com.wabacus.util.*</import>
+                    <import>com.rongzer.rdp.auth.system.util.DataRoleUtils</import>
+               </imports>
+               <value>
+                <![CDATA[
+
+                   // role_name = "<input type='checkbox' "+ischecked+" value='"+role_id+"' onClick='javascript:selectRole(this);'>"+role_name;
+                   // String strUserID = (String)rrequest.getAttribute("USER_ID");
+                    //data_permissions_type = DataRoleUtils.getInstance().getDataRoleContent(strUserID,role_id,data_permissions_type,ischecked);
+                  
+                ]]>
+                </value>                
+			</format>
+			
+		</report>
+
+        <header>
+
+           <![CDATA[
+            <div id="childRoleDataS" style="background:#e5f0e2;width: 340px;height:340px;float:left;border:1px solid #006699;display: none;position:absolute;">
+            </div>
+              <script>
+              
+              var roledata={};
+              
+              function setRoleDataJSON(roleid,isChecked,rolestr)
+              {
+                 var jRole = {checked:isChecked,data:rolestr};
+                 roledata[roleid] = jRole;
+              }
+              
+              function saveRoleData()
+              {
+              	var objUserId=getEditableReportColValues("sysUserEditNew","report1",{USER_ID:true},null);
+              	var userId=objUserId.USER_ID.value;
+              	if($("#sysUserEditNew_guid_report2")[0]){
+              		var flag = checkListUnique('sysUserEditNew','report2',{ROLE_ID:true},"商品列表存在重复数据！");
+	              	if(!flag){
+	              		return WX_SAVE_TERMINAT;;
+	              	}
+            		setEditableReportColValue("sysUserEditNew","report2",{USER_ID:userId},null);
+                	doAddDataForSaving('sysUserEditNew_guid_report1','true');
+              	}
+              
+               // setCustomizeParamValue('sysUserEditNew','report1',"roledata",JSON.stringify(roledata));
+              }
+              
+              function selectRole(obj)
+              {
+                var strRoleID = obj.value;
+                if (roledata[strRoleID] == null)
+                {
+                    roledata[strRoleID] = {checked:"",data:""};
+                }
+                
+                if (obj.checked)
+                {
+                    roledata[strRoleID].checked = "checked";
+                    if (document.getElementById("role_data_"+strRoleID) != null)
+                    {
+                        document.getElementById("role_data_"+strRoleID).style.display="block";
+                    }
+                    
+                }
+                else
+                {
+                    roledata[strRoleID].checked = "";
+                    if (document.getElementById("role_data_"+strRoleID) != null)
+                    {
+                        document.getElementById("role_data_"+strRoleID).style.display="none";
+                    }
+
+                }
+                
+              }
+              
+              function selectRoleData(objCheck)
+              {
+                 var rid = $(objCheck).attr("rid");
+                 var rdid = $(objCheck).attr("rdid");
+                 var value = $(objCheck).attr("value");
+                 var theroledatas = roledata[rid].data;
+                 
+                 //将值从roledata替换掉
+                 theroledatas = theroledatas.replace(rdid+","+value+";","");
+                 
+                 if (objCheck.checked)
+                 {
+                    //将值加入到缓存
+                    theroledatas += rdid+","+value+";";
+                 }
+                 
+                 roledata[rid].data =theroledatas;
+              }
+              
+              function selectChildRole(objCheck)
+              {
+              	 
+                 var rid = $(objCheck).attr("rid");
+                 var pid = $(objCheck).attr("pid");
+                 var theroledatas = roledata[rid].data;
+                
+                 //设置选中的值
+                 var strSelect = "";                 
+                 $("#childRoleDataS").find("input[type='checkbox']").each(function(){
+                    var tid = $(this).attr("id");
+
+                    if (tid != "selectrollall")
+                    {
+	                    var trdid = $(this).attr("rdid");
+	                    alert(trdid);
+	                    var tchecked =  $(this).attr("checked");
+	                    var tvalue = $(this).attr("value");
+	                    //将值从roledata替换掉
+	                    theroledatas = theroledatas.replace(trdid+","+tvalue+";","");
+	                    
+		                 if (tchecked)
+		                 {
+		                    //将值加入到缓存
+		                    theroledatas += trdid+","+tvalue+";";
+		                    strSelect += $(this).attr("label")+";";
+		                 }
+						
+                    }
+                });
+
+                if (strSelect.length>0)
+                {
+                    strSelect = "<br/>己选择："+strSelect;
+                }
+                
+                $("#hasSelected_"+rid+pid).html(strSelect);
+                roledata[rid].data =theroledatas;
+              }
+              
+              function selectAllChildRole(objCheck)
+              {
+			    var isChecked = objCheck.checked;
+			    var objLast = null;
+			    $("#childRoleDataS").find("input[type='checkbox']").each(function(){
+
+			        if(isChecked){
+			            $(this).attr("checked",true);
+			        }else{
+			            $(this).attr("checked",false);
+			        }
+			        
+			        objLast = this;
+
+			    });
+			    
+			    if (objLast != null)
+			    {
+			       selectChildRole(objLast);
+			    }
+              }
+
+               function closeChildRole(obj)
+              {
+                $("#childRoleDataS").css("display","none");        
+              } 
+                
+			  function openChildDiv(ctx,roleid,roledataid,parentID){
+				   var selectvalue = roledata[roleid].data;
+				   $.ajax({
+				        type : "post",
+				        datatype : "json",
+				        url : ctx+"auth/getChildRoleContent.htm",
+				        data:{roleid:roleid,
+				              roledataid:roledataid,
+				              parentvalueid:parentID,
+				              selectvalue:selectvalue
+				             },
+				        success : function(responsedata) {
+                            var html1 = responsedata.substring(1,responsedata.length-1);
+				            $("#childRoleDataS").html(html1);
+                            var doc = document.getElementById("a_"+roleid+parentID);
+				            var h = $("#childRoleDataS").height()/2;
+
+		                    var left= doc.getBoundingClientRect().left+document.documentElement.scrollLeft+doc.offsetWidth; 
+		                    var top = doc.getBoundingClientRect().top+document.documentElement.scrollTop-h;
+		                    $("#childRoleDataS").css("top",top+20+"px");
+		                    $("#childRoleDataS").css("left",left+"px");
+		                    $("#childRoleDataS").css("display","block");				             
+				        }
+				    });				   
+				}
+           </script>
+           ]]>
+        </header>		
+	</page>
+	
+
+</applications>

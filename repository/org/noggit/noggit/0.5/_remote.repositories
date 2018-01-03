@@ -1,0 +1,6 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:02:09 CST 2016
+noggit-0.5.pom>nexus=
+noggit-0.5.jar>nexus=
+noggit-0.5.jar>central=
+noggit-0.5.pom>central=

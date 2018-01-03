@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Aug 06 14:00:14 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact com.rongzer.rdp\:rdp.b.solr\:jar\:0.7.1.1.6-SNAPSHOT from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: Network is unreachable
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1470463214914

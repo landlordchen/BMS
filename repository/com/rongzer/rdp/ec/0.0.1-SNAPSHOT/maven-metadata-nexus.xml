@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.rongzer.rdp</groupId>
+  <artifactId>ec</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20161130.013924</timestamp>
+      <buildNumber>473</buildNumber>
+    </snapshot>
+    <lastUpdated>20161130013924</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.1-20161130.013924-473</value>
+        <updated>20161130013924</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

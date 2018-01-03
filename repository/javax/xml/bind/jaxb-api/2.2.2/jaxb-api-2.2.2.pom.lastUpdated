@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Nov 26 16:34:39 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact javax.xml.bind\:jaxb-api\:pom\:2.2.2 from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: connect timed out
+https\://repo.maven.apache.org/maven2/.lastUpdated=1480149279888
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1480149278044

@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Aug 06 14:07:47 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1470463667515
+@default-central-https\://repo.maven.apache.org/maven2/.lastUpdated=1470463216982
+https\://repo.maven.apache.org/maven2/.error=Could not transfer artifact commons-httpclient\:commons-httpclient\:pom\:3.0.1 from/to central (https\://repo.maven.apache.org/maven2)\: repo.maven.apache.org

@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.rongzer</groupId>
+    <artifactId>rdp</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>com.rongzer.rdp</groupId>
+  <artifactId>rdp.d.resources</artifactId>
+  <version>${rdp.d.resources.version}</version>
+  <name>rdp.d.resources</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+		<dependency>
+			<groupId>com.rongzer.rdp</groupId>
+			<artifactId>rdp.b.common</artifactId>
+			<version>${rdp.b.common.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.rongzer.rdp</groupId>
+			<artifactId>rdp.b.util</artifactId>
+			<version>${rdp.b.util.version}</version>
+		</dependency>
+  </dependencies>
+  
+  
+  <build>
+        <plugins>
+  
+  		<plugin>  
+                <groupId>org.apache.maven.plugins</groupId>  
+                <artifactId>maven-resources-plugin</artifactId>  
+                <configuration>  
+                    <includeEmptyDirs>true</includeEmptyDirs>  
+                    <encoding>utf-8</encoding>  
+                    <nonFilteredFileExtensions>  
+                        <!-- <nonFilteredFileExtension>exe</nonFilteredFileExtension>  
+                        <nonFilteredFileExtension>zip</nonFilteredFileExtension>  
+                        <nonFilteredFileExtension>vbs</nonFilteredFileExtension>  
+                        <nonFilteredFileExtension>sh</nonFilteredFileExtension> -->  
+                    </nonFilteredFileExtensions>  
+                </configuration>  
+                <executions>  
+                    <execution>  
+                        <id>copy-resources</id>  
+                        <phase>validate</phase>  
+                        <goals>  
+                            <goal>copy-resources</goal>  
+                        </goals>  
+                        <configuration>  
+                            <includeEmptyDirs>true</includeEmptyDirs>  
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>  
+                            <excludes>  
+                                <!-- <exclude>agentmanager.jsmooth</exclude>  
+                                <exclude>assembly.xml</exclude>   -->
+                            </excludes>  
+                            <resources>  
+                                <resource>
+                                    <directory>WebContent</directory>  
+                                    <filtering>true</filtering>  
+                                </resource>  
+                            </resources>  
+                        </configuration>  
+                    </execution>  
+                </executions>  
+            </plugin>
+            </plugins>
+            </build>
+</project>

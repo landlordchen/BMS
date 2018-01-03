@@ -1,0 +1,4 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Nov 26 15:41:11 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact com.rongzer.rdp.ec\:ec.c.weactivity\:pom\:0.0.3.1.6-SNAPSHOT from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: The operation was cancelled.
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1480146071050

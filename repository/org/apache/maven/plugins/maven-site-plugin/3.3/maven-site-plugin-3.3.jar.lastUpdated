@@ -1,0 +1,6 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:04:32 CST 2016
+@default-artifactory-http\://172.0.0.30\:8080/artifactory/plugins-releases/.lastUpdated=1481871872681
+http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1470463659816
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871872895
+http\://172.0.0.30\:8080/artifactory/plugins-releases/.error=Could not transfer artifact org.apache.maven.plugins\:maven-site-plugin\:jar\:3.3 from/to artifactory (http\://172.0.0.30\:8080/artifactory/plugins-releases)\: Connection refused

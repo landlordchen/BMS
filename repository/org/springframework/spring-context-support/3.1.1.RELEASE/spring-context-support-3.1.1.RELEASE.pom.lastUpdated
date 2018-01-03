@@ -1,0 +1,11 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Fri Dec 16 15:02:05 CST 2016
+@default-ext-release-local-http\://172.0.0.30\:8080/artifactory/ext-release-local/.lastUpdated=1481871723165
+http\://172.0.0.30\:8080/artifactory/maven/.error=Could not transfer artifact org.springframework\:spring-context-support\:pom\:3.1.1.RELEASE from/to maven-cache (http\://172.0.0.30\:8080/artifactory/maven)\: Connection refused
+@default-third-party-http\://172.0.0.30\:8080/artifactory/third-party/.lastUpdated=1481871723164
+@default-maven-cache-http\://172.0.0.30\:8080/artifactory/maven/.lastUpdated=1481871723162
+http\://172.0.0.30\:8080/artifactory/private-internal-repository/.error=Could not transfer artifact org.springframework\:spring-context-support\:pom\:3.1.1.RELEASE from/to private-internal-repository (http\://172.0.0.30\:8080/artifactory/private-internal-repository)\: Connection refused
+http\://172.0.0.30\:8080/artifactory/ext-release-local/.error=Could not transfer artifact org.springframework\:spring-context-support\:pom\:3.1.1.RELEASE from/to ext-release-local (http\://172.0.0.30\:8080/artifactory/ext-release-local)\: Connection refused
+@default-private-internal-repository-http\://172.0.0.30\:8080/artifactory/private-internal-repository/.lastUpdated=1481871723167
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481871725259
+http\://172.0.0.30\:8080/artifactory/third-party/.error=Could not transfer artifact org.springframework\:spring-context-support\:pom\:3.1.1.RELEASE from/to third-party (http\://172.0.0.30\:8080/artifactory/third-party)\: Connection refused

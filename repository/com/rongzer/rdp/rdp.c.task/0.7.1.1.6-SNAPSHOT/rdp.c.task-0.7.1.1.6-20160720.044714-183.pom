@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.rongzer</groupId>
+    <artifactId>rdp</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>com.rongzer.rdp</groupId>
+  <artifactId>rdp.c.task</artifactId>
+  <version>${rdp.version}</version>
+  <name>rdp.c.task</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${jsp-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.util</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.common</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>
+        <dependency>
+	        <groupId>com.rongzer.rdp</groupId>
+	        <artifactId>rdp.b.wabacus</artifactId>
+	        <version>${rdp.version}</version>
+	    </dependency>       
+	    <dependency>
+	        <groupId>com.rongzer.rdp</groupId>
+	        <artifactId>rdp.b.cache</artifactId>
+	        <version>${rdp.version}</version>
+	    </dependency>   
+    </dependencies>
+</project>
+

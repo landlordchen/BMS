@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<!-- 新增编辑和修改数据 -->
+	<page id="sysUserEditNewModPass" title="用户管理" js="/webresources/script/validate.js,/resource/libs/js/json2.js">
+		<header>
+        <![CDATA[
+          <script>
+          		function checkOldPassWord(pageid,reportid ,dataObjArr){
+          			var oldPas=dataObjArr[0].PASSWORD;
+          			var inputOldPas=dataObjArr[0].ORG_PASSWORD;
+          			var newPas=dataObjArr[0].NEW_PASSWORD;
+          			var conNewPas=dataObjArr[0].CONF_NEW_PASSWORD;
+          			if(trim(inputOldPas)==''){
+          				wx_warn("请输入原密码",{width:150,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			if(trim(newPas)==''){
+          				wx_warn("请输入新密码",{width:150,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			if(trim(conNewPas)==''){
+          				wx_warn("请再次确认新密码",{width:180,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			if(oldPas!=inputOldPas){
+          				wx_warn("原密码错误",{width:150,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			if(newPas!=conNewPas){
+          				wx_warn("两次录入密码不一致",{width:180,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			if(newPas==inputOldPas){
+          				wx_warn("新密码与原密码一致",{width:180,time:0});
+          				return WX_SAVE_TERMINAT;
+          			}
+          			return WX_SAVE_CONTINUE;
+          		}
+          		function returnMainPage(){
+          			var dataObjArr=getEditableReportColValues('sysUserEditNewModPass','report1',null);
+          			var userId=dataObjArr.USER_ID.value;
+          			window.location.href='ShowReport.wx?PAGEID=sysUserEditNewView&report1_ACCESSMODE=readonly&report2_ACCESSMODE=readonly&WX_EDITTYPE=readonly&USER_ID='+userId;
+          		}
+          </script>
+        ]]>
+      </header>
+		<report id="report1"  extends="sysUserEditNew.report1" width="50%" align="center">
+			<display labelbgcolor="#f0f0f0" labelalign="right" valuealign="center">
+				<col column="USER_ID" displaytype="hidden" />
+				<col column="GROUP_ID" displaytype="hidden" />
+				<col column="{non-fromdb}" property="GROUP_NAME" label="所属组织" displaytype="hidden"/>
+				<col column="PASSWORD" label="密码"  displaytype="hidden">
+				    <inputbox type="passwordbox" jsvalidate="textareaLength16(#label#最大长度为16个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="{non-fromdb}" property="ORG_PASSWORD" label="原密码" jsvalidate="textareaLength16(#label#最大长度为16个字符);isNotEmpty(${invalid.isnotempty})" >
+					<inputbox type="passwordbox" displayon="insert|update"   jsvalidatetype="both">
+		          </inputbox>
+				</col>
+				<col column="{non-fromdb}" property="NEW_PASSWORD" label="新密码" jsvalidate="textareaLength16(#label#最大长度为16个字符);isNotEmpty(${invalid.isnotempty})" >
+					<inputbox type="passwordbox" displayon="insert|update" jsvalidatetype="both">
+		          </inputbox>
+				</col>
+				<col column="{non-fromdb}" property="CONF_NEW_PASSWORD" label="确认新密码" jsvalidate="textareaLength16(#label#最大长度为16个字符);isNotEmpty(${invalid.isnotempty})" >
+					<inputbox type="passwordbox" displayon="insert|update"   jsvalidatetype="both">
+		          </inputbox>
+				</col>
+			</display>
+			<sql beforesave="checkOldPassWord" aftersave="returnMainPage">
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM R_SYS_USER_INFO WHERE {#condition#}]]>
+					</value>
+					<condition name="USER_ID" hidden="true">
+						<value><![CDATA[(USER_ID = '#data#' )]]></value>
+					</condition>
+				</select>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE R_SYS_USER_INFO
+						(PASSWORD=@{CONF_NEW_PASSWORD},UPDATE_TIME=#{NOWTIME},UPDATE_USER=#{userId})
+						where USER_ID=@{USER_ID__old};
+					</value>
+				</update>
+			</sql>
+			<format>
+                    
+			</format>
+			<buttons>
+				<button name="button2" position="" extends="${cancel.button.default}"></button>
+  	 		</buttons>
+		</report>
+	</page>
+	
+	<page id="sysUserEditNewViewData" title="用户管理" js="/webresources/script/validate.js,/resource/libs/js/json2.js">
+		<report id="report1" type="form" >
+			<display labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="USER_ID" displaytype="hidden" />
+				<col column="GROUP_ID" displaytype="hidden" />
+				<col column="{non-fromdb}" property="GROUP_NAME" label="所属组织" labelstyleproperty="name='displayCol' " valuestyleproperty="colspan=3"  br="true">
+		          <inputbox styleproperty="disabled=true">
+		          </inputbox>
+		        </col>   
+				<col column="ACCOUNT" label="登录账号">
+					<inputbox styleproperty="disabled=true" ></inputbox>
+				</col>
+				<col column="NAME_CN" label="中文名" br="true">
+					<inputbox jsvalidate="isNotEmpty(#label#不能为空);textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="NAME_EN" label="英文名">
+					<inputbox  jsvalidate="textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="NICKNAME" label="昵称" br="true">
+					<inputbox jsvalidate="textareaLength(#label#最大长度为32个字符);" jsvalidatetype="both" ></inputbox>
+				</col>
+				<col column="SEX" label="性别">
+					<inputbox type="selectbox" defaultvalue="0">
+						<option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D004_hasempty"></option>
+			     	</inputbox>
+				</col>
+				<col column="POST" label="部门" br="true">
+					<inputbox type="selectbox" >
+					     <option dataset="class{com.rongzer.rdp.web.service.common.SelectBoxService}" value="D132_hasempty"></option>
+				    </inputbox>
+				</col>
+				<col column="PHONE" label="电话">
+					<inputbox jsvalidate="textareaLength16(#label#最大长度为16个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				<col column="EMAIL" label="邮箱" br="true">
+					<inputbox jsvalidate="isEmail(#label#必须为有效的邮箱);textareaLength128(#label#最大长度为128个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				
+				<col column="MSN" label="MSN" displaytype="hidden">
+				</col>
+				
+				<col column="PASSWORD" label="密码"   displaytype="hidden" br="true" defaultvalue="request{USER_DEFAULT_PWD}">
+				    <inputbox type="passwordbox" jsvalidate="textareaLength16(#label#最大长度为16个字符);" jsvalidatetype="both"></inputbox>
+				</col>
+				
+				<col column="ADDRESS" label="地址" br="true" valuestyleproperty="colspan=3">
+					<inputbox styleproperty="style='width:100%'" jsvalidate="textareaLength128(#label#最大长度为128个字符);" jsvalidatetype="both" ></inputbox>
+				</col>
+				<col column="REMARK" label="备注" valuestyleproperty="colspan=3" br="true">
+					<inputbox jsvalidate="textareaLength256(#label#最大长度为256个字符);" jsvalidatetype="both" type="textareabox" styleproperty="style='width:100%' rows='3'"></inputbox>
+				</col>
+				<col column="STATUS"  label="状态" displaytype="hidden"></col>
+				<col column="IS_DELETE" label="是否删除"  displaytype="hidden"/>
+		        <col column="ADD_TIME" label="新增时间" displaytype="hidden"/>
+		        <col column="ADD_USER" label="新增人"  displaytype="hidden"/>
+		        <col column="UPDATE_TIME" label="更新时间"  displaytype="hidden"/>
+		        <col column="UPDATE_USER" label="更新人"   displaytype="hidden"/>
+			</display>
+			<format>
+		       <imports>
+			     <import>com.wabacus.util.*</import>
+			     <import>java.util.*</import>
+			     <import>com.rongzer.rdp.common.service.RDPUtil</import>
+			     <import>com.rongzer.rdp.web.service.common.DictService</import>
+			     <import>com.rongzer.rdp.web.service.system.ParseDictService</import>
+		         <import>com.wabacus.system.*</import>
+		      </imports>
+		      <value>
+			   <![CDATA[
+					rrequest.getRequest().setAttribute("userId",rrequest.getAttribute("USER_ID"));
+					if(GROUP_ID==null||"".equals(GROUP_ID)){
+						GROUP_ID =rrequest.getRequest().getParameter("GROUP_ID");
+					}
+		            String groupNameSql="SELECT GROUP_FULL_NAME from R_SYS_GROUP_INFO WHERE GROUP_ID ='"+GROUP_ID+"'";
+		            Map mapgroup = RDPUtil.queryRowData(groupNameSql);
+		            GROUP_NAME = (String)mapgroup.get("GROUP_FULL_NAME");
+				  ]]>
+			  </value>
+		   </format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM R_SYS_USER_INFO WHERE {#condition#}]]>
+					</value>
+					<condition name="USER_ID" hidden="true">
+						<value><![CDATA[(USER_ID = '#data#' )]]></value>
+					</condition>
+				</select>
+				<update>
+					<params>
+						<param name="userId" value="session{LoginUser.loginUserId}"></param>
+						<param name="NOWTIME" value="request{NOWTIME}"></param>
+					</params>
+					<value>
+						UPDATE R_SYS_USER_INFO
+						(@{GROUP_ID},@{NAME_CN},@{NAME_EN},@{NICKNAME},@{POST},@{SEX},
+						@{PHONE},@{ADDRESS},@{MSN},@{EMAIL},@{REMARK},UPDATE_TIME=#{NOWTIME},UPDATE_USER=#{userId})
+						where USER_ID=@{USER_ID__old};
+					</value>
+				</update>
+			</sql>
+		</report>
+		</page>
+</applications>

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.rongzer</groupId>
+    <artifactId>rdp</artifactId>
+    <version>0.1-SNAPSHOT</version>
+  </parent>
+  <groupId>com.rongzer.rdp</groupId>
+  <artifactId>rdp.c.rule</artifactId>
+  <version>${rdp.version}</version>
+  <name>rdp.c.rule</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+    <dependencies>
+	    <!-- start for drools -->
+       <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>5.5.0.Final</version>
+        </dependency>
+        <dependency> 
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>5.5.0.Final</version>
+        </dependency>
+        <!-- end for drools -->
+	        
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.util</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.common</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.wabacus</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>       
+        <dependency>
+            <groupId>com.rongzer.rdp</groupId>
+            <artifactId>rdp.b.cache</artifactId>
+            <version>${rdp.version}</version>
+        </dependency>   
+    </dependencies>
+</project>
+

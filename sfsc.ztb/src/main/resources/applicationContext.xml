@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+     http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd   
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+    <context:property-placeholder ignore-unresolvable="true" local-override="true"
+                                  location="classpath*:/application.properties,classpath*:/application.local.properties"/>
+                                  
+    <util:properties id="APP_PROPERTIES" location="classpath:application.properties" local-override="true"/>
+    
+    <bean id="dataSource" class="com.rongzer.rdp.common.datasource.DataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <property name="idleConnectionTestPeriodInMinutes" value="240" />
+        <property name="idleMaxAgeInMinutes" value="60" />
+        <property name="partitionCount" value="${bonecp.partitionCount}" />
+        <property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+        <property name="minConnectionsPerPartition" value="2" />
+        <property name="acquireIncrement" value="2" />
+        <property name="statementsCacheSize" value="0" />
+        <property name="disableConnectionTracking" value="1" />
+        <property name="lazyInit" value="true" />
+    </bean>
+
+    <!-- 配置sqlSessionFactory工厂 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <!-- 分页插件设置 -->
+        <property name="plugins">
+           <array>
+             <bean class="com.github.pagehelper.PageHelper">
+               <property name="properties">
+                 <value>
+                   dialect=${sql.type}
+                   reasonable=true
+                   pageSizeZero=true
+                 </value>
+               </property>
+             </bean>
+           </array>
+        </property>        
+    </bean>
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+       <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean> 
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+ 
+    <tx:annotation-driven transaction-manager="transactionManager"/>  
+    <aop:config proxy-target-class="true"/>
+
+    <!-- scan for mappers and let them be autowired -->
+   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.rongzer" />
+        <property name="annotationClass" value="org.springframework.stereotype.Repository"/>
+    </bean>
+    
+    <!-- 打开自动扫描 -->
+    <context:component-scan base-package="com.rongzer.rdp.common"/>
+</beans>

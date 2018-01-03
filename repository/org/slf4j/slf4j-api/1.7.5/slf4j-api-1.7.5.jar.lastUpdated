@@ -1,0 +1,5 @@
+#NOTE: This is an Aether internal implementation file, its format can be changed without prior notice.
+#Sat Dec 17 13:45:00 CST 2016
+http\://172.0.0.35\:81/content/groups/public/.error=Could not transfer artifact org.slf4j\:slf4j-api\:jar\:1.7.5 from/to nexus (http\://172.0.0.35\:81/content/groups/public)\: connect timed out
+https\://repo.maven.apache.org/maven2/.lastUpdated=1481953500877
+@default-nexus-http\://172.0.0.35\:81/content/groups/public/.lastUpdated=1481953419611
